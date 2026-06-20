@@ -33,7 +33,10 @@ If you are tired of standard Windows photo viewers ruining the vibe, Nexus 8.0 w
 *   🔍 **Free-Cam Pan & Zoom** – Scroll the mouse wheel to zoom up to 10x into any high-res image to inspect the finest details. Click and drag to pan around seamlessly.
 *   🎞️ **Interactive Filmstrip** – Hover at the bottom of the player to reveal a sleek, YouTube-style timeline of all your media for instant navigation.
 *   ⭐ **Favorites System** – Hit `Y` on your gamepad or click the star icon to instantly save the best art to your `FAVORITES/` folder for later extraction.
-*   🗂️ **Smart Video Thumbnails** – Automatically generates lightweight, cached thumbnails for heavy NSFW video files using OpenCV to keep the gallery menu butter-smooth.
+*   🌊 **Algorithm "Flow"** – A background Python thread calculates the HSV color values of all your media, allowing you to seamlessly sort images by color (Hue) for hypnotic, aesthetically pleasing transitions.
+*   🖼️ **Wallpaper Engine Mode** – Want your gallery running behind your desktop icons? Run `wallpaper_mode.py` to seamlessly inject the entire immersive engine into the Windows `WorkerW` layer.
+*   🚀 **Enterprise-Grade Optimization** – Custom Python generators for 4K video chunk streaming (zero RAM usage), and smart 15KB PIL thumbnail caching to prevent browser DOM crashes even if your folder contains 50,000+ files.
+*   🗂️ **Smart Media Thumbnails** – Automatically generates lightweight, cached thumbnails for heavy video files using OpenCV to keep the gallery menu butter-smooth.
 
 ---
 

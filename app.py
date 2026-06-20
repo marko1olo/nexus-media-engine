@@ -8,9 +8,15 @@ from datetime import datetime
 from flask import Flask, render_template, request, Response, jsonify
 
 try:
-    import cv2
+import cv2
 except ImportError:
     cv2 = None
+
+try:
+    from PIL import Image
+    import colorsys
+except ImportError:
+    Image = None
 
 app = Flask(__name__)
 
@@ -26,6 +32,59 @@ AUDIO_DIR = os.path.join(GALLERY_ROOT, "audio")
 os.makedirs(FAVORITES_DIR, exist_ok=True)
 os.makedirs(THUMBNAIL_DIR, exist_ok=True)
 os.makedirs(AUDIO_DIR, exist_ok=True)
+
+COLOR_CACHE_FILE = os.path.join(GALLERY_ROOT, "cache", "colors.json")
+COLOR_CACHE = {}
+import json
+import threading
+
+CACHE_LOCK = threading.Lock()
+
+def load_color_cache():
+    global COLOR_CACHE
+    if os.path.exists(COLOR_CACHE_FILE):
+        try:
+            with open(COLOR_CACHE_FILE, 'r') as f:
+                COLOR_CACHE = json.load(f)
+        except: pass
+
+load_color_cache()
+
+def save_color_cache():
+    with CACHE_LOCK:
+        try:
+            with open(COLOR_CACHE_FILE, 'w') as f:
+                json.dump(COLOR_CACHE, f)
+        except: pass
+
+BACKGROUND_THREAD_RUNNING = False
+
+def extract_color_bg(filepaths):
+    global BACKGROUND_THREAD_RUNNING
+    if BACKGROUND_THREAD_RUNNING: return
+    BACKGROUND_THREAD_RUNNING = True
+    
+    if not Image: 
+        BACKGROUND_THREAD_RUNNING = False
+        return
+        
+    new_data = False
+    for p in filepaths:
+        if p not in COLOR_CACHE:
+            try:
+                with Image.open(p) as img:
+                    img = img.convert("RGB")
+                    img.thumbnail((50, 50)) # Fast thumbnail
+                    r, g, b = img.resize((1, 1)).getpixel((0, 0))
+                    h, s, v = colorsys.rgb_to_hsv(r/255.0, g/255.0, b/255.0)
+                    COLOR_CACHE[p] = h
+                    new_data = True
+            except:
+                COLOR_CACHE[p] = 0.0 # fallback
+    if new_data:
+        save_color_cache()
+    
+    BACKGROUND_THREAD_RUNNING = False
 
 ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.mp4', '.webm', '.mkv'}
 mimetypes.add_type('video/webm', '.webm')
@@ -114,6 +173,14 @@ def api_playlist():
         media_files.sort(key=lambda x: x["time"])
     elif sort_mode == "az":
         media_files.sort(key=lambda x: x["name"].lower())
+    elif sort_mode == "flow":
+        # Launch background thread to calculate missing colors
+        missing = [m["path"] for m in media_files if m["path"] not in COLOR_CACHE and m["ext"] not in ['.mp4', '.webm', '.mkv']]
+        if missing:
+            threading.Thread(target=extract_color_bg, args=(missing,), daemon=True).start()
+        
+        # Sort by Hue
+        media_files.sort(key=lambda x: COLOR_CACHE.get(x["path"], 0.0))
 
     return jsonify({"total": len(media_files), "items": media_files})
 
@@ -159,12 +226,16 @@ def serve_thumbnail():
     if not filepath or not os.path.exists(filepath):
         return "File not found", 404
 
-    # Генерируем уникальный хэш для кэша
-    file_hash = hashlib.md5(filepath.encode('utf-8')).hexdigest()
+    # Генерируем уникальный хэш для кэша с учетом даты изменения файла
+    mtime = os.path.getmtime(filepath)
+    file_hash = hashlib.md5(f"{filepath}_{mtime}".encode('utf-8')).hexdigest()
     thumb_path = os.path.join(THUMBNAIL_DIR, f"{file_hash}.jpg")
 
     if not os.path.exists(thumb_path):
-        if cv2:
+        mime_type, _ = mimetypes.guess_type(filepath)
+        is_video = mime_type and mime_type.startswith('video')
+        
+        if is_video and cv2:
             try:
                 cap = cv2.VideoCapture(filepath)
                 frames_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -179,6 +250,13 @@ def serve_thumbnail():
                     cv2.imwrite(thumb_path, resized)
                 cap.release()
             except Exception as e:
+                pass
+        elif not is_video and Image:
+            try:
+                with Image.open(filepath) as img:
+                    img.thumbnail((400, 400))
+                    img.convert('RGB').save(thumb_path, format='JPEG', quality=85)
+            except Exception:
                 pass
                 
     if os.path.exists(thumb_path):
@@ -203,12 +281,20 @@ def serve_media():
         if range_header:
             byte_range = range_header.replace('bytes=', '').split('-')
             start = int(byte_range[0])
-            end = int(byte_range[1]) if byte_range[1] else file_size - 1
+            end = int(byte_range[1]) if len(byte_range) > 1 and byte_range[1] else file_size - 1
             length = end - start + 1
-            with open(filepath, 'rb') as f:
-                f.seek(start)
-                data = f.read(length)
-            rv = Response(data, 206, mimetype=mime_type, direct_passthrough=True)
+            
+            def generate():
+                with open(filepath, 'rb') as f:
+                    f.seek(start)
+                    remaining = length
+                    while remaining > 0:
+                        chunk = f.read(min(8192*8, remaining))
+                        if not chunk: break
+                        yield chunk
+                        remaining -= len(chunk)
+
+            rv = Response(generate(), 206, mimetype=mime_type, direct_passthrough=True)
             rv.headers.add('Content-Range', f'bytes {start}-{end}/{file_size}')
             rv.headers.add('Accept-Ranges', 'bytes')
             return rv

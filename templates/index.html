@@ -179,7 +179,7 @@
 
         /* ВСТРОЕННЫЙ ВИДЕО ПЛЕЕР */
         #video-controls { display: none; width: 60%; max-width: 800px; background: var(--glass-bg); backdrop-filter: blur(15px); padding: 12px 25px; border-radius: 15px; border: 1px solid var(--glass-border); margin-bottom: 10px; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        #vid-progress { flex-grow: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer; position: relative; overflow: hidden; }
+        #vid-progress { flex-grow: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer; position: relative; }
         #vid-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; pointer-events: none; transition: width 0.1s linear; box-shadow: 0 0 10px var(--accent); }
         .time-text { font-size: 13px; font-family: monospace; color: #ccc; font-weight: bold; }
 
@@ -224,6 +224,7 @@
                     <option value="oldest">Старые</option>
                     <option value="random">Случайно</option>
                     <option value="az">A-Z</option>
+                    <option value="flow">🌊 Flow (По Цвету)</option>
                 </select>
                 <select id="sel-group">
                     <option value="none">Без группировки</option>
@@ -269,6 +270,7 @@
                         <option value="oldest">Старые</option>
                         <option value="random">Случайно</option>
                         <option value="az">A-Z</option>
+                        <option value="flow">🌊 Flow (По Цвету)</option>
                     </select>
                 </div>
                 <div class="slider-group"><span>Скорость:</span><input type="range" id="inp-speed" min="1" max="30" value="5"><span id="val-speed" style="width: 25px;">5s</span></div>
@@ -284,7 +286,13 @@
                 <button id="btn-vid-mute" style="padding: 6px 12px; border-radius: 8px; background: rgba(0,0,0,0.5); border:none;">🔊 100%</button>
                 <input type="range" id="inp-vid-vol" min="0" max="100" value="100" style="width: 80px;">
                 <span class="time-text" id="vid-time-curr">00:00</span>
-                <div id="vid-progress"><div id="vid-fill"></div></div>
+                <div id="vid-progress">
+                    <div id="vid-fill"></div>
+                    <div id="vid-scrub-preview" style="display:none; position:absolute; bottom:20px; transform:translateX(-50%); width:160px; height:90px; border:2px solid var(--accent); border-radius:8px; overflow:hidden; z-index:100; box-shadow:0 5px 15px rgba(0,0,0,0.8); background:#000; pointer-events:none;">
+                        <video id="vid-scrub-video" style="width:100%; height:100%; object-fit:cover;" muted playsinline></video>
+                        <div id="vid-scrub-time" style="position:absolute; bottom:2px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); padding:2px 5px; border-radius:4px; font-size:11px; font-family:monospace; color:#fff;">00:00</div>
+                    </div>
+                </div>
                 <span class="time-text" id="vid-time-total">00:00</span>
             </div>
 
@@ -485,25 +493,26 @@
 
         function createTile(item, index, isAutoPlay) {
             const isVid = ['mp4','webm','mkv'].includes(item.ext.replace('.',''));
-            const u = '/media/stream?path=' + encodeURIComponent(item.path);
+            const thumb = '/media/thumbnail?path=' + encodeURIComponent(item.path);
             let h = `<div class="grid-item" onclick="startPlay(${index}, ${isAutoPlay})">`;
-            if (isVid) {
-                const thumb = '/media/thumbnail?path=' + encodeURIComponent(item.path);
-                h += `<span class="type-badge">ВИДЕО</span><img src="${thumb}" loading="lazy">`;
-            } else {
-                h += `<img src="${u}" loading="lazy">`;
-            }
-            return h + '</div>';
+            if (isVid) h += `<span class="type-badge">ВИДЕО</span>`;
+            h += `<img src="${thumb}" loading="lazy"></div>`;
+            return h;
         }
 
         // FILMSTRIP LOGIC
         function buildFilmstrip() {
             let html = '';
-            state.allData.forEach((item, i) => {
-                const isVid = ['mp4','webm','mkv'].includes(item.ext.replace('.',''));
-                const src = isVid ? `/media/thumbnail?path=${encodeURIComponent(item.path)}` : `/media/stream?path=${encodeURIComponent(item.path)}`;
+            // Limit filmstrip to a maximum of 1000 items to prevent catastrophic DOM bloat
+            const limit = Math.min(state.allData.length, 1000);
+            for(let i=0; i < limit; i++) {
+                const item = state.allData[i];
+                const src = `/media/thumbnail?path=${encodeURIComponent(item.path)}`;
                 html += `<img class="filmstrip-item" id="film-${i}" src="${src}" onclick="playMedia(${i}); event.stopPropagation();" loading="lazy">`;
-            });
+            }
+            if(state.allData.length > 1000) {
+                html += `<div style="display:inline-block; height:60px; line-height:60px; color:#888; padding: 0 20px; font-weight:bold; background:#222; border-radius:6px; vertical-align:top;">+ ещё ${state.allData.length - 1000}</div>`;
+            }
             DOM.filmstrip.innerHTML = html;
         }
 
@@ -753,10 +762,41 @@
             const v = getActiveVid();
             v.currentTime = ((e.clientX - r.left) / r.width) * v.duration;
         };
+
+        const scrubPreview = document.getElementById('vid-scrub-preview');
+        const scrubVideo = document.getElementById('vid-scrub-video');
+        const scrubTime = document.getElementById('vid-scrub-time');
+
+        document.getElementById('vid-progress').addEventListener('mousemove', e => {
+            const r = e.target.closest('#vid-progress').getBoundingClientRect();
+            const v = getActiveVid();
+            if(!v.duration) return;
+            const percent = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+            const hoverTime = percent * v.duration;
+            
+            scrubPreview.style.display = 'block';
+            scrubPreview.style.left = (percent * 100) + '%';
+            
+            if (scrubVideo.src !== v.src) scrubVideo.src = v.src;
+            scrubVideo.currentTime = hoverTime;
+            scrubTime.textContent = formatTime(hoverTime);
+        });
+        document.getElementById('vid-progress').addEventListener('mouseleave', () => {
+            scrubPreview.style.display = 'none';
+        });
+
         document.getElementById('inp-vid-vol').oninput = e => { 
             const vol = e.target.value/100;
             DOM.vid1.volume = vol; DOM.vid2.volume = vol;
             document.getElementById('btn-vid-mute').textContent = `🔊 ${e.target.value}%`; 
+            if(DOM.vid1.muted) { DOM.vid1.muted = false; DOM.vid2.muted = false; document.getElementById('btn-vid-mute').style.color = '#fff'; }
+        };
+        
+        document.getElementById('btn-vid-mute').onclick = () => {
+            const isMuted = DOM.vid1.muted;
+            DOM.vid1.muted = !isMuted; DOM.vid2.muted = !isMuted;
+            document.getElementById('btn-vid-mute').style.color = !isMuted ? 'var(--accent)' : '#fff';
+            document.getElementById('btn-vid-mute').textContent = !isMuted ? '🔇 MUTE' : `🔊 ${document.getElementById('inp-vid-vol').value}%`;
         };
 
         document.getElementById('btn-apply').onclick = loadData;
@@ -791,6 +831,7 @@
 
         document.addEventListener('keydown', e => {
             if(!document.getElementById('player-screen').classList.contains('active')) return;
+            if(e.repeat) return; // Prevent holding down key from spamming playMedia and thrashing the UI
             resetImmersiveTimer();
             if(e.key === 'ArrowRight') document.getElementById('btn-next').click();
             if(e.key === 'ArrowLeft') document.getElementById('btn-prev').click();

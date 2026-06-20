@@ -1,2 +1,5 @@
 flask
 opencv-python
+Pillow
+pywebview
+pywin32
