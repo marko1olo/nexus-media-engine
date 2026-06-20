@@ -25,7 +25,7 @@ if %errorlevel% neq 0 (
 
 :: Тихая проверка и установка Flask (если его нет)
 echo [*] Проверка компонентов...
-pip install flask opencv-python -q
+pip install -r requirements.txt -q
 
 echo [*] Запуск локального сервера...
 echo [*] Браузер откроется автоматически через пару секунд.
