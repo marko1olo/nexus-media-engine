@@ -11,7 +11,7 @@
 
 **Nexus Media Engine** is a high-performance, seamless media gallery built specifically for absolute immersion in adult art and media collections. Designed to handle massive local hentai/NSFW archives, it turns a standard folder of images into a cinematic slideshow experience.
 
-Drop in your art, throw in some ASMR or moans in MP3 format, and watch the engine sync everything together with zero-latency crossfading, dynamic Ambilight effects, and a neon audio-visualizer that pulses to the sound.
+Drop in your art, throw in some ASMR or moans in MP3 format, and watch the engine sync everything together with zero-latency crossfading and dynamic Ambilight effects.
 
 If you are tired of standard Windows photo viewers ruining the vibe, Nexus 8.0 will redefine your immersion.
 
@@ -27,7 +27,7 @@ If you are tired of standard Windows photo viewers ruining the vibe, Nexus 8.0 w
 
 *   🎬 **Zero-Latency Video Crossfade** – Utilizes a dual-video-buffer architecture. While you watch one video/image, the next is preloaded silently in the background, allowing for perfectly smooth, cinematic transitions without a single millisecond of black screen.
 *   🌈 **Dynamic Ambilight Aura** – Real-time color extraction analyzes the current art on screen and projects a soft, matching neon glow onto the background, making every image pop with its own atmosphere.
-*   🎵 **Audio Spectrum Visualizer** – Drop your `.mp3` tracks (ASMR, moans, ambient) into the `audio/` folder, hit play, and a glowing neon equalizer will pulse perfectly to the audio using the Web Audio API.
+*   🎵 **Immersive Background Audio** – Drop your `.mp3` tracks (ASMR, moans, ambient) into the `audio/` folder, hit play, and enjoy seamless background audio while browsing the gallery.
 *   ✨ **Cinematic Bokeh Particles** – A custom particle engine overlays softly glowing, floating dust particles to give your 2D images and videos stunning 3D depth and atmosphere.
 *   🎮 **Gamepad Support** – Fully navigate the gallery, trigger slideshows, and add to favorites using an Xbox or PlayStation controller (HTML5 Gamepad API) — play with one hand, literally.
 *   🔍 **Free-Cam Pan & Zoom** – Scroll the mouse wheel to zoom up to 10x into any high-res image to inspect the finest details. Click and drag to pan around seamlessly.

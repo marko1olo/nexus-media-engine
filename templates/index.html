@@ -99,8 +99,6 @@
         /* PARTICLES */
         #particles-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; }
 
-        /* AUDIO VISUALIZER */
-        #visualizer { position: absolute; bottom: 0; left: 0; width: 100%; height: 150px; z-index: 8; pointer-events: none; opacity: 0.7; }
 
         #media-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; cursor: grab; }
         #media-layer:active { cursor: grabbing; }
@@ -243,7 +241,7 @@
     <div id="player-screen" class="screen">
         <div id="ambilight-layer"></div>
         <canvas id="particles-canvas"></canvas>
-        <canvas id="visualizer"></canvas>
+
         <div id="media-layer">
             <div id="pan-zoom-wrapper">
                 <img id="player-img-1" class="media-asset">
@@ -322,54 +320,6 @@
         let bgAudioIdx = 0;
         const bgAudioPlayer = document.getElementById('bg-audio');
 
-        // AUDIO VISUALIZER
-        let audioCtx, analyser, sourceNode;
-        const visCanvas = document.getElementById('visualizer');
-        const visCtx = visCanvas.getContext('2d');
-        let visDataArray;
-
-        function initAudioVisualizer() {
-            if (audioCtx) return;
-            try {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioCtx.createAnalyser();
-                sourceNode = audioCtx.createMediaElementSource(bgAudioPlayer);
-                sourceNode.connect(analyser);
-                analyser.connect(audioCtx.destination);
-                analyser.fftSize = 128;
-                visDataArray = new Uint8Array(analyser.frequencyBinCount);
-                drawVisualizer();
-            } catch(e) {}
-        }
-
-        function drawVisualizer() {
-            requestAnimationFrame(drawVisualizer);
-            if (!audioCtx) return;
-            
-            visCanvas.width = window.innerWidth;
-            visCanvas.height = 150;
-            
-            analyser.getByteFrequencyData(visDataArray);
-            visCtx.clearRect(0, 0, visCanvas.width, visCanvas.height);
-            
-            const barWidth = (visCanvas.width / visDataArray.length) * 1.5;
-            let x = 0;
-            for(let i = 0; i < visDataArray.length; i++) {
-                const barHeight = visDataArray[i] / 1.5;
-                const alpha = Math.max(0.1, barHeight/150);
-                
-                visCtx.shadowBlur = 15;
-                visCtx.shadowColor = `rgba(255, 42, 109, ${alpha})`;
-                visCtx.fillStyle = `rgba(255, 42, 109, ${alpha})`;
-                
-                // Draw rounded top bar
-                visCtx.beginPath();
-                visCtx.roundRect(x, visCanvas.height - barHeight, barWidth - 4, barHeight, [10, 10, 0, 0]);
-                visCtx.fill();
-                
-                x += barWidth;
-            }
-        }
 
         // BOKEH PARTICLES
         const pCanvas = document.getElementById('particles-canvas');
@@ -650,7 +600,6 @@
         function startPlay(idx, autoPlay = true) {
             document.getElementById('gallery-screen').classList.remove('active');
             document.getElementById('player-screen').classList.add('active');
-            initAudioVisualizer();
             if (bgPlaylist.length > 0 && bgAudioPlayer.paused) bgAudioPlayer.play().catch(()=>{});
             
             state.isPlaying = autoPlay;
