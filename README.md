@@ -15,6 +15,12 @@ Drop in your art, throw in some ASMR or moans in MP3 format, and watch the engin
 
 If you are tired of standard Windows photo viewers ruining the vibe, Nexus 8.0 will redefine your immersion.
 
+### 🔥 Sneak Peek
+<p align="center">
+  <img src="assets/menu.png" width="45%" />
+  <img src="assets/player.png" width="45%" />
+</p>
+
 ---
 
 ## ✨ God-Tier Immersive Features
