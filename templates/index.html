@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Immersion Nexus 8.0 - Absolute God Tier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --accent: #ff2a6d; 
+            --accent-glow: rgba(255, 42, 109, 0.6);
+            --bg-dark: #050505; 
+            --tile-size: 220px; 
+            --glass-bg: rgba(15, 15, 15, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body, html { 
+            width: 100vw; height: 100vh; 
+            background-color: var(--bg-dark); 
+            color: #eee; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+        }
+        ::-webkit-scrollbar { width: 10px; } 
+        ::-webkit-scrollbar-track { background: #000; } 
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+        
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; }
+        .screen.active { display: flex; }
+
+        /* --- ГАЛЕРЕЯ --- */
+        #gallery-screen { padding: 30px; overflow-y: auto; scroll-behavior: smooth; }
+        
+        .toolbar { 
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 20px 30px; border-radius: 16px; margin-bottom: 30px; 
+            display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; 
+            border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            position: sticky; top: 0; z-index: 100;
+        }
+        .tools-group { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        
+        select, button, input[type="text"] { 
+            background: rgba(30, 30, 30, 0.8); color: #fff; border: 1px solid var(--glass-border); 
+            padding: 10px 18px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; 
+            font-size: 14px; font-family: 'Inter', sans-serif; outline: none;
+        }
+        input[type="text"] { cursor: text; width: 350px;}
+        select:hover, button:hover, input[type="text"]:focus { border-color: var(--accent); background: rgba(40, 40, 40, 0.9); }
+        .btn-primary { background: linear-gradient(135deg, #ff2a6d, #d9004c); border: none; font-weight: 600; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+        
+        .title-glow {
+            font-size: 24px; font-weight: 800;
+            background: linear-gradient(90deg, #fff, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-right: 20px; letter-spacing: 1px;
+        }
+
+        .group-header { 
+            width: 100%; font-size: 22px; font-weight: 800; color: #fff; 
+            margin: 40px 0 20px 0; border-bottom: 1px solid var(--glass-border); 
+            padding-bottom: 10px; opacity: 0.9; letter-spacing: 0.5px;
+        }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--tile-size), 1fr)); gap: 15px; padding-bottom: 60px; }
+        
+        .grid-item { 
+            position: relative; aspect-ratio: 1/1; background: #111; border-radius: 12px; overflow: hidden; cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            animation: fadeUp 0.5s ease-out forwards; opacity: 0; transform: translateY(20px);
+        }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        
+        .grid-item:hover { transform: translateY(-5px) scale(1.03); z-index: 10; box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 0 2px var(--accent); }
+        .grid-item img, .grid-item video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .grid-item:hover img, .grid-item:hover video { transform: scale(1.08); }
+        
+        .type-badge { 
+            position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; 
+            letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* --- МОДАЛЬНОЕ ОКНО ПАПКИ --- */
+        #folder-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: var(--glass-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--glass-border); width: 550px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        
+        /* --- ПЛЕЕР (ИММЕРСИЯ) --- */
+        #player-screen { background: #000; overflow: hidden; position: relative; }
+        
+        /* AMBILIGHT AURA */
+        #ambilight-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            opacity: 0.65; transition: background 1.5s ease-in-out;
+        }
+
+        /* PARTICLES */
+        #particles-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; }
+
+        /* AUDIO VISUALIZER */
+        #visualizer { position: absolute; bottom: 0; left: 0; width: 100%; height: 150px; z-index: 8; pointer-events: none; opacity: 0.7; }
+
+        #media-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; cursor: grab; }
+        #media-layer:active { cursor: grabbing; }
+
+        #pan-zoom-wrapper {
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+            transform-origin: center center; transition: transform 0.1s ease-out;
+        }
+        
+        .media-asset { 
+            width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; 
+            opacity: 0; pointer-events: none; transition: opacity 1.2s ease-in-out; transform-origin: center;
+        }
+        .media-asset.active { opacity: 1; pointer-events: auto; }
+        
+        @keyframes kenburns { 0% { transform: scale(1.0) translate(0, 0); } 100% { transform: scale(1.15) translate(1%, 1%); } }
+        .media-asset.kenburns { animation: kenburns 40s linear forwards; }
+        
+        /* ВИЗУАЛЬНЫЕ ЭФФЕКТЫ */
+        #pause-badge {
+            position: absolute; top: 30px; right: 40px; background: var(--glass-bg); backdrop-filter: blur(10px); color: #fff;
+            padding: 10px 20px; border-radius: 10px; font-weight: 800; font-size: 14px; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 10px; border: 1px solid var(--glass-border);
+            opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 15; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        #pause-badge.show { opacity: 1; transform: translateY(0); }
+        
+        .blink { animation: blinker 1.5s ease-in-out infinite; color: var(--accent); }
+        @keyframes blinker { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        #action-flash {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
+            font-size: 80px; color: white; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+            width: 140px; height: 140px; display: flex; justify-content: center; align-items: center;
+            border-radius: 50%; opacity: 0; pointer-events: none; z-index: 30;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+        }
+        #action-flash.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+        /* Зоны наведения для UI */
+        .hover-zone-top { position: absolute; top: 0; left: 0; width: 100%; height: 15%; z-index: 20; }
+        .hover-zone-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 25%; z-index: 20; }
+        
+        .panel { position: absolute; left: 0; width: 100%; padding: 25px 40px; display: flex; justify-content: space-between; align-items: center; z-index: 25; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s; }
+        .top-panel { top: 0; transform: translateY(-100%); background: linear-gradient(to bottom, rgba(0,0,0,0.9) 10%, rgba(0,0,0,0.4) 60%, transparent); }
+        .hover-zone-top:hover ~ .top-panel, .top-panel:hover { transform: translateY(0); opacity: 1; }
+        .bottom-panel { bottom: 0; transform: translateY(100%); flex-direction: column; gap: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, rgba(0,0,0,0.4) 60%, transparent); }
+        .hover-zone-bottom:hover ~ .bottom-panel, .bottom-panel:hover, .hover-zone-bottom:hover ~ .filmstrip-container { transform: translateY(0); opacity: 1; }
+        
+        #player-screen.hide-ui .top-panel { transform: translateY(-100%); opacity: 0; }
+        #player-screen.hide-ui .bottom-panel { transform: translateY(100%); opacity: 0; }
+        #player-screen.hide-ui .filmstrip-container { transform: translateY(100px); opacity: 0; }
+        #player-screen.hide-ui #pause-badge { opacity: 0; transform: translateY(-20px); }
+
+        .controls-row { display: flex; gap: 25px; align-items: center; justify-content: center; }
+        .slider-group { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; color: #ddd; background: var(--glass-bg); backdrop-filter: blur(10px); padding: 8px 20px; border-radius: 30px; border: 1px solid var(--glass-border); }
+        input[type="range"] { accent-color: var(--accent); cursor: pointer; }
+
+        /* FILMSTRIP TIMELINE */
+        .filmstrip-container {
+            position: absolute; bottom: 105px; left: 0; width: 100%; height: 75px; z-index: 24; 
+            overflow-x: auto; overflow-y: hidden; white-space: nowrap; scroll-behavior: smooth;
+            opacity: 0; transform: translateY(40px); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 0 40px;
+        }
+        .filmstrip-container::-webkit-scrollbar { height: 8px; }
+        .filmstrip-container:hover { opacity: 1; transform: translateY(0); }
+        
+        .filmstrip-item {
+            display: inline-block; height: 60px; aspect-ratio: 16/9; margin-right: 8px;
+            border-radius: 6px; cursor: pointer; object-fit: cover; opacity: 0.4; transition: 0.3s;
+            border: 2px solid transparent; background: #222;
+        }
+        .filmstrip-item:hover { opacity: 0.8; transform: scale(1.05); }
+        .filmstrip-item.active { opacity: 1; border-color: var(--accent); transform: scale(1.1); z-index: 2; box-shadow: 0 0 15px var(--accent-glow); }
+
+        /* ВСТРОЕННЫЙ ВИДЕО ПЛЕЕР */
+        #video-controls { display: none; width: 60%; max-width: 800px; background: var(--glass-bg); backdrop-filter: blur(15px); padding: 12px 25px; border-radius: 15px; border: 1px solid var(--glass-border); margin-bottom: 10px; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #vid-progress { flex-grow: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer; position: relative; overflow: hidden; }
+        #vid-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; pointer-events: none; transition: width 0.1s linear; box-shadow: 0 0 10px var(--accent); }
+        .time-text { font-size: 13px; font-family: monospace; color: #ccc; font-weight: bold; }
+
+        /* TOAST NOTIFICATIONS */
+        #toast-container { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none; }
+        .toast { background: rgba(255, 42, 109, 0.9); backdrop-filter: blur(10px); color: white; padding: 10px 20px; border-radius: 30px; font-weight: bold; font-size: 14px; box-shadow: 0 5px 15px rgba(255, 42, 109, 0.4); border: 1px solid rgba(255,255,255,0.2); animation: toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toastOut 0.3s ease 2.5s forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
+    </style>
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <!-- МОДАЛКА ПАПКИ -->
+    <div id="folder-modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 15px; color: #fff; font-weight: 800;">Сменить Корневую Папку</h2>
+            <p style="font-size: 14px; color: #aaa; margin-bottom: 25px;">Введи полный путь к новой папке на ПК</p>
+            <input type="text" id="inp-new-path" placeholder="C:\Твоя\Папка..." style="width: 100%; margin-bottom: 25px; text-align: center; font-size: 16px;">
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button onclick="document.getElementById('folder-modal').style.display='none'">Отмена</button>
+                <button class="btn-primary" onclick="setNewRoot()">Применить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН 1: ГАЛЕРЕЯ -->
+    <div id="gallery-screen" class="screen active">
+        <div class="toolbar">
+            <div class="tools-group">
+                <div class="title-glow">NEXUS 8.0</div>
+                <div class="slider-group">
+                    <label>Масштаб:</label>
+                    <input type="range" id="inp-tile-size" min="150" max="400" value="220">
+                </div>
+            </div>
+            <div class="tools-group">
+                <button onclick="document.getElementById('folder-modal').style.display='flex'">📁 Изменить Папку</button>
+                <select id="sel-folder"><option>Загрузка...</option></select>
+                <select id="sel-sort">
+                    <option value="newest">Новые</option>
+                    <option value="oldest">Старые</option>
+                    <option value="random">Случайно</option>
+                    <option value="az">A-Z</option>
+                </select>
+                <select id="sel-group">
+                    <option value="none">Без группировки</option>
+                    <option value="date">По Дате</option>
+                    <option value="type">По Типу</option>
+                </select>
+                <button id="btn-apply" style="border-color: #555;">♻ Обновить</button>
+                <button id="btn-start" class="btn-primary" style="padding: 10px 30px;">▶ СЛАЙДШОУ</button>
+            </div>
+        </div>
+        <div style="color: #888; margin-bottom: 20px; font-weight: 600;">Файлов: <span id="total-count" style="color: #fff; font-weight: 800;">0</span> <span id="current-dir-label" style="margin-left: 20px; font-size: 13px;"></span></div>
+        <div id="gallery-content"></div>
+    </div>
+
+    <!-- ЭКРАН 2: ПЛЕЕР -->
+    <div id="player-screen" class="screen">
+        <div id="ambilight-layer"></div>
+        <canvas id="particles-canvas"></canvas>
+        <canvas id="visualizer"></canvas>
+        <div id="media-layer">
+            <div id="pan-zoom-wrapper">
+                <img id="player-img-1" class="media-asset">
+                <img id="player-img-2" class="media-asset">
+                <video id="player-vid-1" class="media-asset" playsinline preload="auto"></video>
+                <video id="player-vid-2" class="media-asset" playsinline preload="auto"></video>
+            </div>
+        </div>
+
+        <div id="pause-badge"><span class="blink">⏸</span> НА ПАУЗЕ</div>
+        <div id="action-flash"></div>
+        <div class="hover-zone-top"></div>
+        <div class="hover-zone-bottom"></div>
+
+        <div class="panel top-panel">
+            <button id="btn-back" style="background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border);">⬅ Назад (Esc/B)</button>
+            <div class="tools-group">
+                <button id="btn-reset-cam" style="display:none; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: white;">🎯 Сброс Камеры</button>
+                <button id="btn-favorite" style="background: rgba(255, 42, 109, 0.2); border: 1px solid var(--accent); color: white; padding: 6px 15px; font-weight: bold;">❤️ В Избранное (Y)</button>
+                <div class="slider-group">
+                    <span>Сортировка:</span>
+                    <select id="player-sel-sort" style="padding: 4px 10px; font-size: 13px; background: rgba(0,0,0,0.5); border: none; font-weight: bold;">
+                        <option value="newest">Новые</option>
+                        <option value="oldest">Старые</option>
+                        <option value="random">Случайно</option>
+                        <option value="az">A-Z</option>
+                    </select>
+                </div>
+                <div class="slider-group"><span>Скорость:</span><input type="range" id="inp-speed" min="1" max="30" value="5"><span id="val-speed" style="width: 25px;">5s</span></div>
+                <div class="slider-group"><span>Фон:</span><input type="range" id="inp-bg-vol" min="0" max="100" value="50"><span id="val-bg-vol" style="width: 35px;">50%</span></div>
+                <button onclick="document.documentElement.requestFullscreen()" style="background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border);">🔲 Фулл</button>
+            </div>
+        </div>
+
+        <div class="filmstrip-container" id="filmstrip-container"></div>
+
+        <div class="panel bottom-panel">
+            <div id="video-controls">
+                <button id="btn-vid-mute" style="padding: 6px 12px; border-radius: 8px; background: rgba(0,0,0,0.5); border:none;">🔊 100%</button>
+                <input type="range" id="inp-vid-vol" min="0" max="100" value="100" style="width: 80px;">
+                <span class="time-text" id="vid-time-curr">00:00</span>
+                <div id="vid-progress"><div id="vid-fill"></div></div>
+                <span class="time-text" id="vid-time-total">00:00</span>
+            </div>
+
+            <div class="controls-row">
+                <button id="btn-prev" style="padding: 15px 35px; font-size: 16px; border-radius: 12px; background: var(--glass-bg); backdrop-filter: blur(10px);">⬅ НАЗАД (LB)</button>
+                <button id="btn-toggle-play" class="btn-primary" style="padding: 15px 50px; font-size: 18px; border-radius: 12px; min-width: 180px;">⏸ ПАУЗА (A)</button>
+                <button id="btn-next" style="padding: 15px 35px; font-size: 16px; border-radius: 12px; background: var(--glass-bg); backdrop-filter: blur(10px);">ВПЕРЕД ➡ (RB)</button>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="bg-audio" loop></audio>
+
+    <script>
+        const state = { playlist: [], allData: [], currentIdx: 0, isPlaying: true, speed: 5000, timeout: null, activeImgBuffer: 1, activeVidBuffer: 1 };
+        const DOM = {
+            gallery: document.getElementById('gallery-content'), folderSel: document.getElementById('sel-folder'),
+            sortSel: document.getElementById('sel-sort'), groupSel: document.getElementById('sel-group'),
+            img1: document.getElementById('player-img-1'), img2: document.getElementById('player-img-2'), 
+            vid1: document.getElementById('player-vid-1'), vid2: document.getElementById('player-vid-2'),
+            vidControls: document.getElementById('video-controls'), playerSortSel: document.getElementById('player-sel-sort'),
+            filmstrip: document.getElementById('filmstrip-container'), panZoom: document.getElementById('pan-zoom-wrapper'),
+            ambilight: document.getElementById('ambilight-layer'), btnResetCam: document.getElementById('btn-reset-cam')
+        };
+
+        let bgPlaylist = [];
+        let bgAudioIdx = 0;
+        const bgAudioPlayer = document.getElementById('bg-audio');
+
+        // AUDIO VISUALIZER
+        let audioCtx, analyser, sourceNode;
+        const visCanvas = document.getElementById('visualizer');
+        const visCtx = visCanvas.getContext('2d');
+        let visDataArray;
+
+        function initAudioVisualizer() {
+            if (audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                sourceNode = audioCtx.createMediaElementSource(bgAudioPlayer);
+                sourceNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                analyser.fftSize = 128;
+                visDataArray = new Uint8Array(analyser.frequencyBinCount);
+                drawVisualizer();
+            } catch(e) {}
+        }
+
+        function drawVisualizer() {
+            requestAnimationFrame(drawVisualizer);
+            if (!audioCtx) return;
+            
+            visCanvas.width = window.innerWidth;
+            visCanvas.height = 150;
+            
+            analyser.getByteFrequencyData(visDataArray);
+            visCtx.clearRect(0, 0, visCanvas.width, visCanvas.height);
+            
+            const barWidth = (visCanvas.width / visDataArray.length) * 1.5;
+            let x = 0;
+            for(let i = 0; i < visDataArray.length; i++) {
+                const barHeight = visDataArray[i] / 1.5;
+                const alpha = Math.max(0.1, barHeight/150);
+                
+                visCtx.shadowBlur = 15;
+                visCtx.shadowColor = `rgba(255, 42, 109, ${alpha})`;
+                visCtx.fillStyle = `rgba(255, 42, 109, ${alpha})`;
+                
+                // Draw rounded top bar
+                visCtx.beginPath();
+                visCtx.roundRect(x, visCanvas.height - barHeight, barWidth - 4, barHeight, [10, 10, 0, 0]);
+                visCtx.fill();
+                
+                x += barWidth;
+            }
+        }
+
+        // BOKEH PARTICLES
+        const pCanvas = document.getElementById('particles-canvas');
+        const pCtx = pCanvas.getContext('2d');
+        let particles = [];
+        function initParticles() {
+            pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight;
+            particles = [];
+            for(let i=0; i<30; i++) {
+                particles.push({
+                    x: Math.random() * pCanvas.width, y: Math.random() * pCanvas.height,
+                    r: Math.random() * 8 + 2, dx: (Math.random() - 0.5) * 0.3, dy: (Math.random() - 0.5) * 0.3,
+                    alpha: Math.random() * 0.4 + 0.1
+                });
+            }
+            drawParticles();
+        }
+        function drawParticles() {
+            requestAnimationFrame(drawParticles);
+            pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight;
+            pCtx.clearRect(0,0, pCanvas.width, pCanvas.height);
+            particles.forEach(p => {
+                p.x += p.dx; p.y += p.dy;
+                if(p.x < 0 || p.x > pCanvas.width) p.dx = -p.dx;
+                if(p.y < 0 || p.y > pCanvas.height) p.dy = -p.dy;
+                pCtx.beginPath();
+                pCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+                pCtx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+                pCtx.shadowBlur = 15; pCtx.shadowColor = "white";
+                pCtx.fill();
+            });
+        }
+        initParticles();
+
+        // AMBILIGHT CANVAS
+        const colorCanvas = document.createElement('canvas');
+        const colorCtx = colorCanvas.getContext('2d', { willReadFrequently: true });
+        colorCanvas.width = 16; colorCanvas.height = 16;
+        let ambilightInterval = null;
+
+        async function boot() {
+            const r = await fetch('/api/config'); const d = await r.json();
+            document.getElementById('current-dir-label').textContent = `Путь: ${d.current_dir}`;
+            DOM.folderSel.innerHTML = d.folders.map(f => `<option value="${f}">${f}</option>`).join('');
+            
+            const r2 = await fetch('/api/audio_playlist'); const d2 = await r2.json();
+            bgPlaylist = d2.playlist;
+            if (bgPlaylist.length > 0) bgAudioPlayer.src = '/media/stream?path=' + encodeURIComponent(bgPlaylist[0]);
+
+            await loadData();
+        }
+
+        bgAudioPlayer.onended = () => {
+            if (bgPlaylist.length > 0) {
+                bgAudioIdx = (bgAudioIdx + 1) % bgPlaylist.length;
+                bgAudioPlayer.src = '/media/stream?path=' + encodeURIComponent(bgPlaylist[bgAudioIdx]);
+                bgAudioPlayer.play().catch(()=>{});
+            }
+        };
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast'; t.textContent = msg;
+            document.getElementById('toast-container').appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        async function setNewRoot() {
+            const newPath = document.getElementById('inp-new-path').value;
+            const r = await fetch('/api/change_root', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({path: newPath}) });
+            const d = await r.json();
+            if(d.success) { document.getElementById('folder-modal').style.display='none'; boot(); }
+            else { alert(d.msg); }
+        }
+
+        async function loadData() {
+            DOM.gallery.innerHTML = '<h2 style="color:#666; font-weight:300; margin-top:20px;">Идет сканирование медиа...</h2>';
+            const r = await fetch(`/api/playlist?folder=${encodeURIComponent(DOM.folderSel.value)}&sort=${DOM.sortSel.value}`);
+            const d = await r.json();
+            state.allData = d.items;
+            document.getElementById('total-count').textContent = d.total;
+            DOM.playerSortSel.value = DOM.sortSel.value;
+            renderGallery();
+        }
+
+        function formatMonth(ts) { const d = new Date(ts * 1000); return d.toLocaleString('ru-RU', { month: 'long', year: 'numeric' }).toUpperCase(); }
+
+        function renderGallery() {
+            const groupMode = DOM.groupSel.value;
+            let html = '';
+            state.playlist = state.allData.map(x => x.path);
+            const renderData = state.allData.slice(0, 200);
+
+            if (groupMode === 'none') {
+                html += '<div class="grid-container">';
+                renderData.forEach((item, i) => html += createTile(item, i, false));
+                html += '</div>';
+            } else {
+                const groups = {};
+                renderData.forEach((item, i) => {
+                    let key = 'Остальное';
+                    if (groupMode === 'date') key = formatMonth(item.time);
+                    if (groupMode === 'type') key = ['mp4','webm','mkv'].includes(item.ext.replace('.','')) ? '🎥 ВИДЕО' : '🖼 ИЗОБРАЖЕНИЯ';
+                    if (!groups[key]) groups[key] = [];
+                    groups[key].push({item, index: i});
+                });
+
+                for (const [gName, items] of Object.entries(groups)) {
+                    html += `<div class="group-header">${gName} <span style="font-size:14px; color:#888;">(${items.length})</span></div>`;
+                    html += '<div class="grid-container">';
+                    items.forEach(x => html += createTile(x.item, x.index, false));
+                    html += '</div>';
+                }
+            }
+            if(state.allData.length > 200) html += `<div style="text-align:center; padding:40px; color:#666; font-weight:bold;">Показаны первые 200 файлов. В плеере доступны все ${state.allData.length}.</div>`;
+            DOM.gallery.innerHTML = html;
+            setTimeout(() => { document.querySelectorAll('.grid-item').forEach((t, i) => { t.style.animationDelay = `${i * 10}ms`; }); }, 10);
+            
+            buildFilmstrip();
+        }
+
+        function createTile(item, index, isAutoPlay) {
+            const isVid = ['mp4','webm','mkv'].includes(item.ext.replace('.',''));
+            const u = '/media/stream?path=' + encodeURIComponent(item.path);
+            let h = `<div class="grid-item" onclick="startPlay(${index}, ${isAutoPlay})">`;
+            if (isVid) {
+                const thumb = '/media/thumbnail?path=' + encodeURIComponent(item.path);
+                h += `<span class="type-badge">ВИДЕО</span><img src="${thumb}" loading="lazy">`;
+            } else {
+                h += `<img src="${u}" loading="lazy">`;
+            }
+            return h + '</div>';
+        }
+
+        // FILMSTRIP LOGIC
+        function buildFilmstrip() {
+            let html = '';
+            state.allData.forEach((item, i) => {
+                const isVid = ['mp4','webm','mkv'].includes(item.ext.replace('.',''));
+                const src = isVid ? `/media/thumbnail?path=${encodeURIComponent(item.path)}` : `/media/stream?path=${encodeURIComponent(item.path)}`;
+                html += `<img class="filmstrip-item" id="film-${i}" src="${src}" onclick="playMedia(${i}); event.stopPropagation();" loading="lazy">`;
+            });
+            DOM.filmstrip.innerHTML = html;
+        }
+
+        function updateFilmstripUI() {
+            document.querySelectorAll('.filmstrip-item.active').forEach(e => e.classList.remove('active'));
+            const activeEl = document.getElementById(`film-${state.currentIdx}`);
+            if (activeEl) {
+                activeEl.classList.add('active');
+                activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+
+        // AMBILIGHT LOGIC
+        function extractAmbilightColor(mediaEl) {
+            try {
+                colorCtx.drawImage(mediaEl, 0, 0, 16, 16);
+                const data = colorCtx.getImageData(0,0,16,16).data;
+                let r=0, g=0, b=0, count=0;
+                for(let i=0; i<data.length; i+=4) { 
+                    // Filter out very dark pixels so the aura isn't too dim
+                    if(data[i] + data[i+1] + data[i+2] > 50) {
+                        r+=data[i]; g+=data[i+1]; b+=data[i+2]; count++; 
+                    }
+                }
+                if (count > 0) {
+                    r = Math.floor(r/count); g = Math.floor(g/count); b = Math.floor(b/count);
+                    // Boost saturation
+                    r = Math.min(255, r * 1.5); g = Math.min(255, g * 1.5); b = Math.min(255, b * 1.5);
+                } else {
+                    r=30; g=30; b=30; // default dim glow
+                }
+                DOM.ambilight.style.background = `radial-gradient(circle at center, rgba(${r},${g},${b},0.85) 0%, rgba(${Math.max(0,r-50)},${Math.max(0,g-50)},${Math.max(0,b-50)},0.4) 60%, transparent 100%)`;
+            } catch(e) {}
+        }
+        function startAmbilight(mediaEl) {
+            clearInterval(ambilightInterval);
+            if(mediaEl.tagName === 'IMG') extractAmbilightColor(mediaEl);
+            else if (mediaEl.tagName === 'VIDEO') {
+                ambilightInterval = setInterval(() => extractAmbilightColor(mediaEl), 500);
+            }
+        }
+
+        // PAN AND ZOOM LOGIC
+        let pz = { isDragging: false, startX: 0, startY: 0, curX: 0, curY: 0, zoom: 1 };
+        function applyPanZoom() {
+            DOM.panZoom.style.transform = `translate(${pz.curX}px, ${pz.curY}px) scale(${pz.zoom})`;
+            if (pz.zoom !== 1 || pz.curX !== 0 || pz.curY !== 0) {
+                DOM.btnResetCam.style.display = 'block';
+                document.querySelectorAll('.media-asset.active').forEach(el => el.style.animationPlayState = 'paused');
+            } else {
+                DOM.btnResetCam.style.display = 'none';
+                document.querySelectorAll('.media-asset.active').forEach(el => el.style.animationPlayState = 'running');
+            }
+        }
+        function resetPanZoom() { pz = { isDragging: false, startX: 0, startY: 0, curX: 0, curY: 0, zoom: 1 }; applyPanZoom(); }
+        DOM.btnResetCam.onclick = (e) => { e.stopPropagation(); resetPanZoom(); };
+
+        const mediaLayer = document.getElementById('media-layer');
+        mediaLayer.addEventListener('wheel', (e) => {
+            if(!document.getElementById('player-screen').classList.contains('active')) return;
+            e.preventDefault();
+            pz.zoom += e.deltaY * -0.002;
+            pz.zoom = Math.min(Math.max(0.5, pz.zoom), 10);
+            applyPanZoom();
+        });
+        mediaLayer.addEventListener('mousedown', (e) => {
+            if(pz.zoom <= 1) return; 
+            pz.isDragging = true; pz.startX = e.clientX - pz.curX; pz.startY = e.clientY - pz.curY;
+        });
+        mediaLayer.addEventListener('mousemove', (e) => {
+            if (!pz.isDragging) return;
+            pz.curX = e.clientX - pz.startX; pz.curY = e.clientY - pz.startY;
+            applyPanZoom();
+        });
+        mediaLayer.addEventListener('mouseup', () => pz.isDragging = false);
+        mediaLayer.addEventListener('mouseleave', () => pz.isDragging = false);
+
+        // --- ЛОГИКА ПЛЕЕРА И UI ---
+        let hideCursorTimeout;
+        function resetImmersiveTimer() {
+            document.body.style.cursor = 'default';
+            document.getElementById('player-screen').classList.remove('hide-ui');
+            clearTimeout(hideCursorTimeout);
+            hideCursorTimeout = setTimeout(() => {
+                if (state.isPlaying && document.getElementById('player-screen').classList.contains('active')) {
+                    document.body.style.cursor = 'none';
+                    document.getElementById('player-screen').classList.add('hide-ui');
+                }
+            }, 2000);
+        }
+        document.onmousemove = resetImmersiveTimer; document.onclick = resetImmersiveTimer;
+
+        function updatePlayUI() {
+            const btn = document.getElementById('btn-toggle-play');
+            const badge = document.getElementById('pause-badge');
+            if (state.isPlaying) {
+                btn.innerHTML = '⏸ ПАУЗА (A)'; btn.classList.add('btn-primary');
+                btn.style.background = 'linear-gradient(135deg, #ff2a6d, #d9004c)';
+                badge.classList.remove('show'); resetImmersiveTimer();
+            } else {
+                btn.innerHTML = '▶ ПУСК (A)'; btn.classList.remove('btn-primary');
+                btn.style.background = 'rgba(255,255,255,0.1)';
+                badge.classList.add('show');
+                document.body.style.cursor = 'default'; document.getElementById('player-screen').classList.remove('hide-ui');
+                clearTimeout(hideCursorTimeout);
+            }
+        }
+
+        let flashTimeout;
+        function flashIcon(icon) {
+            const el = document.getElementById('action-flash');
+            el.innerHTML = icon; el.classList.add('show');
+            clearTimeout(flashTimeout); flashTimeout = setTimeout(() => el.classList.remove('show'), 400);
+        }
+
+        const imageCache = new Image();
+        function preloadNext(idx) {
+            if(!state.playlist.length) return;
+            let nextIdx = (idx + 1) % state.playlist.length;
+            const path = state.playlist[nextIdx];
+            const u = '/media/stream?path=' + encodeURIComponent(path);
+            
+            if (!path.match(/\.(mp4|webm|mkv)$/i)) {
+                imageCache.src = u;
+            } else {
+                const inactiveVid = state.activeVidBuffer === 1 ? DOM.vid2 : DOM.vid1;
+                if (inactiveVid.src !== u) inactiveVid.src = u;
+            }
+        }
+
+        function getActiveVid() {
+            return state.activeVidBuffer === 1 ? DOM.vid1 : DOM.vid2;
+        }
+
+        function startPlay(idx, autoPlay = true) {
+            document.getElementById('gallery-screen').classList.remove('active');
+            document.getElementById('player-screen').classList.add('active');
+            initAudioVisualizer();
+            if (bgPlaylist.length > 0 && bgAudioPlayer.paused) bgAudioPlayer.play().catch(()=>{});
+            
+            state.isPlaying = autoPlay;
+            updatePlayUI();
+            playMedia(idx);
+        }
+
+        function playMedia(idx) {
+            if(!state.playlist.length) return;
+            if(idx < 0) idx = state.playlist.length - 1;
+            if(idx >= state.playlist.length) idx = 0;
+            state.currentIdx = idx;
+
+            clearTimeout(state.timeout);
+            resetPanZoom();
+            updateFilmstripUI();
+
+            const path = state.playlist[idx];
+            const isVid = path.match(/\.(mp4|webm|mkv)$/i);
+            const u = '/media/stream?path=' + encodeURIComponent(path);
+
+            preloadNext(idx);
+
+            if (isVid) {
+                DOM.img1.classList.remove('active', 'kenburns'); DOM.img2.classList.remove('active', 'kenburns');
+                
+                const currentVid = state.activeVidBuffer === 1 ? DOM.vid1 : DOM.vid2;
+                const nextVid = state.activeVidBuffer === 1 ? DOM.vid2 : DOM.vid1;
+                
+                DOM.vidControls.style.display = 'flex';
+                
+                if(nextVid.src !== u && !nextVid.src.endsWith(u)) nextVid.src = u;
+                nextVid.classList.add('active');
+                
+                if(state.isPlaying) nextVid.play().catch(()=>{});
+                nextVid.onloadeddata = () => startAmbilight(nextVid);
+                nextVid.onended = () => { if(state.isPlaying) playMedia(state.currentIdx + 1); };
+                
+                currentVid.classList.remove('active');
+                setTimeout(() => { if(!currentVid.classList.contains('active')) currentVid.pause(); }, 1200);
+                
+                state.activeVidBuffer = state.activeVidBuffer === 1 ? 2 : 1;
+            } else {
+                DOM.vid1.classList.remove('active'); DOM.vid1.pause(); 
+                DOM.vid2.classList.remove('active'); DOM.vid2.pause(); 
+                DOM.vidControls.style.display = 'none';
+                
+                const currentImg = state.activeImgBuffer === 1 ? DOM.img1 : DOM.img2;
+                const nextImg = state.activeImgBuffer === 1 ? DOM.img2 : DOM.img1;
+                
+                nextImg.src = u;
+                nextImg.onload = () => startAmbilight(nextImg);
+                nextImg.style.animation = 'none'; nextImg.offsetHeight; nextImg.style.animation = null;
+                nextImg.classList.add('kenburns');
+                nextImg.classList.add('active'); currentImg.classList.remove('active');
+                
+                state.activeImgBuffer = state.activeImgBuffer === 1 ? 2 : 1;
+                setTimeout(() => { if(!currentImg.classList.contains('active')) currentImg.classList.remove('kenburns'); }, 1200);
+                if(state.isPlaying) state.timeout = setTimeout(() => playMedia(state.currentIdx + 1), state.speed);
+            }
+        }
+
+        // --- КНОПКИ УПРАВЛЕНИЯ ---
+        document.getElementById('btn-favorite').onclick = async (e) => {
+            if(e) e.stopPropagation();
+            if (!state.playlist.length) return;
+            const path = state.playlist[state.currentIdx];
+            const r = await fetch('/api/favorite', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({path: path}) });
+            const d = await r.json();
+            showToast(d.msg); flashIcon('❤️');
+        };
+
+        DOM.playerSortSel.onchange = async (e) => {
+            const newSort = e.target.value; DOM.sortSel.value = newSort; 
+            const currentFilePath = state.playlist[state.currentIdx];
+            const r = await fetch(`/api/playlist?folder=${encodeURIComponent(DOM.folderSel.value)}&sort=${newSort}`);
+            const d = await r.json();
+            state.allData = d.items; state.playlist = state.allData.map(x => x.path);
+            buildFilmstrip();
+            const newIndex = state.playlist.indexOf(currentFilePath);
+            state.currentIdx = newIndex !== -1 ? newIndex : 0; 
+            updateFilmstripUI();
+        };
+
+        // СМАРТ КЛИК ТОЛЬКО ЕСЛИ НЕТ ЗУМА ИЛИ ДРАГА
+        mediaLayer.onclick = (e) => {
+            if (pz.zoom > 1) return; 
+            const w = window.innerWidth; const x = e.clientX;
+            if (x < w * 0.25) { flashIcon('⏮'); playMedia(state.currentIdx - 1); } 
+            else if (x > w * 0.75) { flashIcon('⏭'); playMedia(state.currentIdx + 1); } 
+            else { document.getElementById('btn-toggle-play').click(); }
+        };
+
+        function formatTime(s) { const m = Math.floor(s/60); const sc = Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
+        
+        function updateVidProgress() {
+            const v = getActiveVid();
+            if(!v.duration) return;
+            document.getElementById('vid-fill').style.width = (v.currentTime / v.duration * 100) + '%';
+            document.getElementById('vid-time-curr').textContent = formatTime(v.currentTime);
+            document.getElementById('vid-time-total').textContent = formatTime(v.duration);
+        }
+        DOM.vid1.ontimeupdate = () => { if(state.activeVidBuffer === 1) updateVidProgress(); };
+        DOM.vid2.ontimeupdate = () => { if(state.activeVidBuffer === 2) updateVidProgress(); };
+        
+        document.getElementById('vid-progress').onclick = e => {
+            e.stopPropagation();
+            const r = e.target.closest('#vid-progress').getBoundingClientRect();
+            const v = getActiveVid();
+            v.currentTime = ((e.clientX - r.left) / r.width) * v.duration;
+        };
+        document.getElementById('inp-vid-vol').oninput = e => { 
+            const vol = e.target.value/100;
+            DOM.vid1.volume = vol; DOM.vid2.volume = vol;
+            document.getElementById('btn-vid-mute').textContent = `🔊 ${e.target.value}%`; 
+        };
+
+        document.getElementById('btn-apply').onclick = loadData;
+        document.getElementById('btn-start').onclick = () => startPlay(0, true);
+        document.getElementById('sel-group').onchange = renderGallery;
+        document.getElementById('inp-tile-size').oninput = e => document.documentElement.style.setProperty('--tile-size', e.target.value + 'px');
+        
+        document.getElementById('btn-prev').onclick = () => { flashIcon('⏮'); playMedia(state.currentIdx - 1); };
+        document.getElementById('btn-next').onclick = () => { flashIcon('⏭'); playMedia(state.currentIdx + 1); };
+        
+        document.getElementById('btn-toggle-play').onclick = (e) => {
+            if(e) e.stopPropagation();
+            initAudioVisualizer();
+            state.isPlaying = !state.isPlaying; updatePlayUI(); flashIcon(state.isPlaying ? '▶' : '⏸');
+            if(state.isPlaying) { 
+                const v = getActiveVid();
+                if(v.classList.contains('active')) v.play(); 
+                else { clearTimeout(state.timeout); state.timeout = setTimeout(() => playMedia(state.currentIdx + 1), state.speed); }
+            } else { clearTimeout(state.timeout); getActiveVid().pause(); }
+        };
+        
+        document.getElementById('btn-back').onclick = () => {
+            document.getElementById('player-screen').classList.remove('active');
+            document.getElementById('gallery-screen').classList.add('active');
+            DOM.vid1.pause(); DOM.vid2.pause(); bgAudioPlayer.pause(); clearTimeout(state.timeout); clearInterval(ambilightInterval);
+            document.body.style.cursor = 'default';
+            if(document.fullscreenElement) document.exitFullscreen();
+        };
+
+        document.getElementById('inp-speed').oninput = e => { state.speed = e.target.value * 1000; document.getElementById('val-speed').textContent = e.target.value + 's'; };
+        document.getElementById('inp-bg-vol').oninput = e => { bgAudioPlayer.volume = e.target.value/100; document.getElementById('val-bg-vol').textContent = e.target.value + '%'; };
+
+        document.addEventListener('keydown', e => {
+            if(!document.getElementById('player-screen').classList.contains('active')) return;
+            resetImmersiveTimer();
+            if(e.key === 'ArrowRight') document.getElementById('btn-next').click();
+            if(e.key === 'ArrowLeft') document.getElementById('btn-prev').click();
+            if(e.key === 'Escape') document.getElementById('btn-back').click();
+            if(e.key === ' ') { e.preventDefault(); document.getElementById('btn-toggle-play').click(); }
+            if(e.key === 'y' || e.key === 'Y') document.getElementById('btn-favorite').click();
+        });
+
+        // --- GAMEPAD SUPPORT ---
+        let lastGamepadState = {};
+        function pollGamepads() {
+            const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+            for (let i = 0; i < gamepads.length; i++) {
+                const gp = gamepads[i];
+                if (gp && document.getElementById('player-screen').classList.contains('active')) {
+                    if (gp.buttons[0] && gp.buttons[0].pressed && !lastGamepadState.b0) { document.getElementById('btn-toggle-play').click(); resetImmersiveTimer(); }
+                    lastGamepadState.b0 = gp.buttons[0] ? gp.buttons[0].pressed : false;
+                    
+                    if (gp.buttons[5] && gp.buttons[5].pressed && !lastGamepadState.b5) { document.getElementById('btn-next').click(); resetImmersiveTimer(); }
+                    lastGamepadState.b5 = gp.buttons[5] ? gp.buttons[5].pressed : false;
+                    
+                    if (gp.buttons[4] && gp.buttons[4].pressed && !lastGamepadState.b4) { document.getElementById('btn-prev').click(); resetImmersiveTimer(); }
+                    lastGamepadState.b4 = gp.buttons[4] ? gp.buttons[4].pressed : false;
+                    
+                    if (gp.buttons[3] && gp.buttons[3].pressed && !lastGamepadState.b3) { document.getElementById('btn-favorite').click(); resetImmersiveTimer(); }
+                    lastGamepadState.b3 = gp.buttons[3] ? gp.buttons[3].pressed : false;
+
+                    if (gp.buttons[1] && gp.buttons[1].pressed && !lastGamepadState.b1) { document.getElementById('btn-back').click(); }
+                    lastGamepadState.b1 = gp.buttons[1] ? gp.buttons[1].pressed : false;
+                }
+            }
+            requestAnimationFrame(pollGamepads);
+        }
+        pollGamepads();
+
+        window.onload = boot;
+    </script>
+</body>
+</html>

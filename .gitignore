@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+
+# Application Specific Caches & Data
+cache/
+FAVORITES/
+audio/
+*.sav
+*.mp3
+*.wav
+*.flac
+*.mkv
+*.mp4
+*.webm
+
+# Screenshots / Test scripts
+screen.png
+gallery_menu.png
+gallery_player.png
+take_screenshot.py
+test_app.py
+capture_gallery.py
+
+# Ignore images in the root directory just in case
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+!gallery_player_demo.png
+!gallery_menu_demo.png
