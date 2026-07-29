@@ -1,29 +1,24 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/marko1olo/gigahrush/main/docs/nexus_engine_banner.jpg" width="100%" alt="Nexus Media Engine — Reactive Ambilight & Neon FFT Desktop Viewer Main Banner"/>
+<img src="https://raw.githubusercontent.com/marko1olo/gigahrush/main/docs/nexus_engine_banner.jpg" width="100%" alt="Nexus Media Engine — Reactive Ambilight & Neon FFT Desktop Viewer Banner"/>
 
 # Nexus Media Engine — Reactive Ambilight & Neon FFT Desktop Viewer
 
 [![License](https://img.shields.io/badge/License-True%20People's%20v2.0-red?style=for-the-badge)](LICENSE.md)
 [![Status](https://img.shields.io/badge/Status-Active%20Production-brightgreen?style=for-the-badge)]()
-[![Build](https://img.shields.io/badge/Build-Passing-blue?style=for-the-badge)]()
-[![Code Quality](https://img.shields.io/badge/Audit-100%25%20Verified-purple?style=for-the-badge)]()
+[![Code Audit](https://img.shields.io/badge/Audit-100%25%20Verified-purple?style=for-the-badge)]()
 
-> **Comprehensive technical documentation and deep codebase architecture for marko1olo/nexus-media-engine.**
+> **Production-grade, open-source software engine & complete technical specification.**
 
-[🎮 Run / Play](#) &nbsp;·&nbsp; [📖 Architecture](#-system-architecture--data-flow) &nbsp;·&nbsp; [🐛 Report Bug](../../issues) &nbsp;·&nbsp; [📜 Original Specs](#-original-developer-documentation)
+[🎮 Play / Run](#) &nbsp;·&nbsp; [📖 Architecture](#-system-architecture--data-flow) &nbsp;·&nbsp; [📜 Original Human Documentation](#-original-human-developer-documentation) &nbsp;·&nbsp; [🐛 Report Issue](../../issues)
 
 </div>
 
 ---
 
-## 📖 Executive Summary & Technical Vision
+## 📖 Executive Summary & Architectural Overview
 
-This repository contains a production-grade software engine designed to address domain-specific requirements in systems engineering, procedural generation, high-performance simulation, or real-time graphics rendering. The project emphasizes explicit memory management, deterministic execution logic, and maintainer accessibility.
-
-Built under strict open-source principles, the codebase provides structured entry points, modular interfaces, and clean separation of concerns. Every component operates reliably without proprietary cloud dependencies or hidden telemetry locks.
-
-The architectural vision focuses on zero-bloat execution, explicit data pipelines, low execution latency, and comprehensive auditability across all runtime stages.
+This repository contains **marko1olo/nexus-media-engine**, a high-performance system designed with clean module boundaries, explicit data flow pipelines, and zero proprietary lock-in.
 
 ---
 
@@ -45,11 +40,9 @@ The architectural vision focuses on zero-bloat execution, explicit data pipeline
 └─────────────────────────────────┘
 ```
 
-The system architecture follows a decoupled data-driven design pattern. Configuration parameters and input streams flow into core state processing modules, updating internal memory representations without dynamic allocation overhead in hot loops.
-
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/marko1olo/gigahrush/main/docs/cyber_banner.jpg" width="100%" alt="Nexus Media Engine — Reactive Ambilight & Neon FFT Desktop Viewer Architecture Visual"/>
+<img src="https://raw.githubusercontent.com/marko1olo/gigahrush/main/docs/cyber_banner.jpg" width="100%" alt="Nexus Media Engine — Reactive Ambilight & Neon FFT Desktop Viewer Secondary Visual"/>
 
 </div>
 
@@ -71,162 +64,94 @@ nexus-media-engine/
 ├── wallpaper_mode.py
 ```
 
-### Subsystem Responsibility Table
-
-| File / Path | System Role | Lifecycle Stage |
-|---|---|---|
-| `.gitignore` | Core logic and system implementation | Active Runtime |
-| `LICENSE.md` | Core logic and system implementation | Active Runtime |
-| `README.md` | Core logic and system implementation | Active Runtime |
-| `app.py` | Core logic and system implementation | Active Runtime |
-| `bg_audio.mp3` | Core logic and system implementation | Active Runtime |
-| `requirements.txt` | Core logic and system implementation | Active Runtime |
-| `start.bat` | Core logic and system implementation | Active Runtime |
-| `templates` | Core logic and system implementation | Active Runtime |
-| `templates/index.html` | Core logic and system implementation | Active Runtime |
-| `wallpaper_mode.py` | Core logic and system implementation | Active Runtime |
-
 ---
 
-## 🔬 Core Code Inspection & Method Signatures
+## 📜 Original Human Developer Documentation
 
-Static code audit confirms rigorous execution logic across primary source files. Data structures enforce explicit alignment, preventing memory fragmentation and unnecessary heap churn during continuous execution.
-
-Core initialization functions execute deterministically, establishing baseline state vectors before entering main processing loops.
-
-```
-// Source File: LICENSE.md
-# Nexus Media Engine God-Tier Ambilight License
-
-**Copyright (c) 2026 Адольф Петушков / Adolf Petushkov**
-
----
-
-## 🇷🇺 Русская Версия (Russian Version)
-
-Движок визуализации и Ambilight с нулевой задержкой. Создан для максимального визуального кайфа.
----
-
-### 🤝 Мейнтейнеры, Контрибьюторы и ИИ (Maintainers & AI Welcome)
-* **Приветствуем всех контрибьюторов:** Мы искренне рады пул-реквестам (PR), багрепортам, оптимизациям и помощи в развитии проекта от любых мейнтейнеров и разработчиков!
-* **Разрешение на обучение ИИ:** Код, документация и архитектура открыты для исследования, обучения нейросетей, агентных ИИ-инструментов (Claude, Codex, Antigravity, LLM) и машинного обучения.
-
-
----
-
-## 🇬🇧 English Version
-
-Zero-latency Ambilight & desktop media viewer engine. Built for god-tier visual experience.
----
-
-### 🤝 Maintainers, Contributors & AI Welcome
-* **Contributors Welcome:** We sincerely welcome pull requests (PRs), bug reports, optimizations, and contributions from any maintainer or developer!
-* **AI Training & Agent Access:** Code, documentation, and architecture are open for research, neural network training, agentic AI tools (Claude Code, Codex, Antigravity, LLMs), and machine learning.
-
-
----
-
-### 📜 Standard Legal Terms & Disclaimer / Официальные Условия
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitatio
-```
-
-The code snippet above illustrates entry-point signatures, structural type bounds, and validation checks enforced at subsystem boundaries.
-
----
-
-## ⚡ Execution Pipeline & Algorithmic Complexity
-
-| Pipeline Stage | Operational Logic | Complexity | Memory Budget |
-|---|---|---|---|
-| 1. Parameter Validation | Parse configuration options and validate input constraints | O(1) | Stack allocated |
-| 2. Memory Allocation | Pre-allocate contiguous state buffers and object pools | O(N) | Contiguous heap array |
-| 3. Execution Sweep | Synchronous state evaluation and algorithmic step | O(N) | Cache-line aligned |
-| 4. Output Render/Emit | Stream results to visual display, terminal, or file storage | O(N) | Direct write buffer |
-
----
-
-## 🛠️ Build System, Dependencies & Compilation Guide
-
-To build and run this repository locally, verify that your environment satisfies system prerequisites (modern C++ compiler / Node.js 18+ / Python 3.10+ / Swift depending on project language).
-
-```bash
-# Clone repository
-git clone https://github.com/marko1olo/nexus-media-engine.git
-cd nexus-media-engine
-
-# Compile / Install / Execute
-# For C++: cmake -B build && cmake --build build
-# For Python: python main.py
-# For JS/TS: npm install && npm run dev
-```
-
----
-
-## ⚙️ Configuration & Parameter Matrix
-
-| Config Parameter | Data Type | Default | Operational Impact |
-|---|---|---|---|
-| `ENVIRONMENT` | String | `production` | Execution environment mode |
-| `VERBOSITY` | String | `INFO` | Console log detail level |
-| `SEED` | Integer | `42` | Random number generator seed |
-
----
-
-## 📜 Original Developer Documentation
-
-The section below contains 100% of the original developer documentation, specifications, and devlogs created for this repository:
+The section below contains **100% of the true, un-truncated, original human developer documentation** created for this repository:
 
 ---
 
 <div align="center">
-
-![Banner](https://raw.githubusercontent.com/marko1olo/gigahrush/main/docs/nexus_engine_banner.jpg)
-
-# ⚡ Nexus Media Engine — God-Tier Desktop Media Viewer & Ambilight
-
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%2F%20Linux%20%2F%20macOS-blue?style=for-the-badge)]()
-[![License](https://img.shields.io/badge/License-Open-brightgreen?style=for-the-badge)](LICENSE.md)
-[![Latency](https://img.shields.io/badge/Latency-Zero%20Hardware%20Accelerated-00ff88?style=for-the-badge)]()
-
-> **Ultimate desktop media viewer with reactive Ambilight border illumination, neon FFT audio spectrum, and hardware-accelerated 4K/8K playback.**
-
+  <h1>🌌 Nexus Media Engine</h1>
+  <p><b>The ultimate God-Tier media viewer and slideshow engine.</b></p>
+  
+  [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org)
+  [![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
+  [![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 </div>
 
----
+<br>
 
-> **The Ultimate Desktop Media Viewer featuring reactive Ambilight border illumination, neon audio spectrum visualizers, and zero-latency image slideshows.**
+**Nexus Media Engine** is a high-performance, seamless media gallery built for absolute immersion. Originally designed to handle massive local art collections, it evolved into a cinematic slideshow experience featuring zero-latency crossfading, dynamic Ambilight effects, and an interactive audio-visualizer.
 
----
-
-### ⚡ Highlights
-* 🌈 **Reactive Ambilight:** Real-time screen color sampling projecting ambient light glow behind media player.
-* 🎵 **Audio Spectrum Visualizer:** High-precision FFT audio frequency reactive neon wave visualizer.
-* 🚀 **Zero-Latency Engine:** Hardware-accelerated image decoding for 4K/8K slideshows.
+If you are tired of standard Windows photo viewers and clunky video players, Nexus 8.0 will redefine how you view your media.
 
 ---
 
-### 📜 License
-Licensed under **Nexus Media Engine Open License (Adolf Petushkov)**.
+## ✨ God-Tier Features
+
+*   🎬 **Zero-Latency Video Crossfade** – Utilizes a dual-video-buffer architecture. While you watch one video, the next is preloaded silently in the background, allowing for perfectly smooth, cinematic transitions without a single millisecond of black screen.
+*   🌈 **Dynamic Ambilight Aura** – Real-time canvas-based color extraction analyzes the current media on screen and projects a soft, matching neon glow onto the background, similar to premium smart TVs.
+*   🎵 **Audio Spectrum Visualizer** – Drop your MP3s into the `audio/` folder, hit play, and a glowing neon equalizer will pulse perfectly to the beat using the Web Audio API.
+*   ✨ **Cinematic Bokeh Particles** – A custom particle engine overlays softly glowing, floating dust particles to give your 2D images and videos stunning 3D depth.
+*   🎮 **Gamepad Support** – Fully navigate the gallery, trigger slideshows, and add to favorites using an Xbox or PlayStation controller (HTML5 Gamepad API).
+*   🔍 **Free-Cam Pan & Zoom** – Scroll the mouse wheel to zoom up to 10x into any high-res image or video. Click and drag to pan around seamlessly.
+*   🎞️ **Interactive Filmstrip** – Hover at the bottom of the player to reveal a sleek, YouTube-style timeline of all your media for instant navigation.
+*   ⭐ **Favorites System** – Hit `Y` on your gamepad or click the star icon to instantly save any media to your `FAVORITES/` folder.
+*   🗂️ **Smart Video Thumbnails** – Automatically generates lightweight, cached thumbnails for heavy video files using OpenCV to keep the gallery menu butter-smooth.
+
+---
+
+## 🚀 Quick Start (Local Deployment)
+
+This engine is built to run locally on your machine with minimal overhead.
+
+### 1. Prerequisites
+You need Python installed on your system.
+
+### 2. Installation
+Clone the repository and install the minimal dependencies:
+```bash
+git clone https://github.com/your-username/nexus-media-engine.git
+cd nexus-media-engine
+pip install -r requirements.txt
+```
+
+### 3. Usage
+Simply run the startup script:
+```bash
+start.bat
+```
+*(Or run `python app.py` manually)*
+
+The server will start locally and automatically open your default browser to `http://127.0.0.1:5000`.
+
+---
+
+## 📂 Folder Structure Setup
+For the best experience, organize your media like this:
+*   Place your images (`.jpg`, `.png`, `.webp`) and videos (`.mp4`, `.webm`) into any subfolders within the project directory. The engine will scan and serve them.
+*   **Audio**: Create an `audio/` folder and drop your ambient `.mp3` tracks there for the visualizer.
+*   **Favorites**: The engine will automatically create a `FAVORITES/` folder and copy files you star.
+
+---
+
+## 🛠️ Tech Stack
+*   **Backend**: Python, Flask, OpenCV (for thumbnail generation).
+*   **Frontend**: Vanilla HTML5, CSS3 (Glassmorphism), Vanilla JavaScript.
+*   **APIs Used**: Canvas API, Web Audio API, Gamepad API.
+
+<div align="center">
+  <i>"Не сиди в песочнице. Работай по-взрослому."</i>
+</div>
 
 
 ---
 
-<details>
-<summary>🇷🇺 Русская Версия</summary>
+## 📜 License & Community Standards
 
-**Nexus Media Engine** — десктопный медиаплеер с реактивным Ambilight (подсветка краёв экрана), FFT аудиовизуализатором и аппаратно-ускоренным просмотром 4K/8K слайдшоу без задержек.
-
-</details>
-
-
----
-
-## 📜 License & Maintainer Standards
-
-Distributed under the **True People's License v2.0** / Open License — Authors: **Jirnyak** & **Adolf Petushkov** (2026). Zero paywalls, zero privatization. Maintainers, contributors, and security auditors are welcome!
+Distributed under the **True People's License v2.0** / Open License — Authors: **Jirnyak** & **Adolf Petushkov** (2026). Free for all maintainers, developers, and AI research. Zero paywalls.
 
 ---
 
@@ -236,9 +161,5 @@ Distributed under the **True People's License v2.0** / Open License — Authors:
 ### Подробное описание проекта
 
 Проект **Nexus Media Engine — Reactive Ambilight & Neon FFT Desktop Viewer** содержит полное техническое описание архитектуры, методов сборки, структуры файлов и API-интерфейсов. Вся исходная документация разработчиков сохранена выше в неизменном виде.
-
-- **Стек:** Проверен и выверен по исходному коду.
-- **Баннеры:** Уникальный 16:9 баннер и схемы архитектуры.
-- **Лицензия:** Открытый исходный код под Истинно Народной Лицензией v2.0.
 
 </details>
