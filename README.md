@@ -1,5 +1,8 @@
 <div align="center">
 
+![NEXUS-MEDIA-ENGINE Banner](https://raw.githubusercontent.com/marko1olo/gigahrush/main/docs/nexus_engine_banner.jpg)
+
+
 # nexus-media-engine — Technical System Architecture & Specification
 
 [![License](https://img.shields.io/badge/License-True%20People's%20v2.0-red?style=for-the-badge)](LICENSE.md)
