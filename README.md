@@ -6,12 +6,8 @@
 
 [![Platform](https://img.shields.io/badge/Platform-Win%20%2F%20Linux%20%2F%20macOS-blue?style=for-the-badge)]()
 [![License](https://img.shields.io/badge/License-Open-brightgreen?style=for-the-badge)](LICENSE.md)
-[![Latency](https://img.shields.io/badge/Latency-Zero%20HW%20Accelerated-00ff88?style=for-the-badge)]()
-[![Stars](https://img.shields.io/github/stars/marko1olo/nexus-media-engine?style=for-the-badge&color=gold)]()
 
-> **Reactive Ambilight border illumination, neon FFT audio spectrum visualizer, hardware-accelerated 4K/8K — the ultimate desktop media experience.**
-
-[▶️ Download](#) &nbsp;·&nbsp; [🐛 Issues](../../issues) &nbsp;·&nbsp; [🤝 Contribute](#)
+> **Reactive Ambilight border illumination, neon FFT audio spectrum visualizer, hardware-accelerated 4K/8K slideshows.**
 
 </div>
 
