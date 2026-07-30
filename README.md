@@ -16,6 +16,12 @@
 </div>
 
 ---
+<p align="center">
+  <a href="https://twitter.com/intent/tweet?text=Check%20out%20nexus-media-engine%20on%20GitHub!&url=https%3A%2F%2Fmarko1olo.github.io%2Fnexus-media-engine%2F"><img src="https://img.shields.io/badge/Share-Twitter%2FX-1DA1F2?style=for-the-badge&logo=x" alt="Share on X"/></a> &nbsp;
+  <a href="https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fmarko1olo.github.io%2Fnexus-media-engine%2F&t=Check%20out%20nexus-media-engine%20on%20GitHub!"><img src="https://img.shields.io/badge/Submit-Hacker%20News-FF6600?style=for-the-badge&logo=y-combinator" alt="Submit to HN"/></a> &nbsp;
+  <a href="https://reddit.com/submit?url=https%3A%2F%2Fmarko1olo.github.io%2Fnexus-media-engine%2F&title=Check%20out%20nexus-media-engine%20on%20GitHub!"><img src="https://img.shields.io/badge/Post-Reddit-FF4500?style=for-the-badge&logo=reddit" alt="Post on Reddit"/></a>
+</p>
+---
 
 ## 📖 Executive Architectural Overview
 
