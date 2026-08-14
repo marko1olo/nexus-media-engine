@@ -1,753 +1,1493 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="NEXUS MEDIA ENGINE AMBILIGHT & FFT AUDIO VISUALIZER.">
-    <meta property="og:title" content="Nexus Media Engine">
-    <meta property="og:description" content="NEXUS MEDIA ENGINE AMBILIGHT & FFT AUDIO VISUALIZER.">
-    <title>Nexus Media Engine</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --theme-bg: #050505; --theme-text: #e0e0e0; --theme-primary: #1a1a1a; --theme-accent: #bf00ff; --theme-font: 'Share Tech Mono'; }
-        
-        :root { --bg: var(--theme-bg); --text: var(--theme-text); --primary: var(--theme-primary); --accent: var(--theme-accent); }
-        body { margin: 0; font-family: var(--theme-font), sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
-        canvas { position: fixed; top: 0; left: 0; z-index: -1; width: 100vw; height: 100vh; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 2rem; }
-        header { display: flex; justify-content: space-between; padding: 1rem 5%; background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--accent); }
-        nav a { color: var(--text); text-decoration: none; margin-left: 2rem; font-weight: 600; transition: color 0.3s; }
-        nav a:hover { color: var(--accent); }
-        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; text-align: center; padding: 0 1rem; }
-        .hero h1 { font-size: 4rem; margin-bottom: 1rem; animation: slideDown 1s cubic-bezier(0.1, 0.7, 0.1, 1); color: var(--accent); text-shadow: 0 0 20px var(--accent); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; padding: 4rem 5%; }
-        .card { background: rgba(0,0,0,0.3); padding: 2rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: all 0.4s ease; position: relative; overflow: hidden; }
-        .card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, var(--accent) 0%, transparent 70%); opacity: 0; transition: opacity 0.4s; z-index: -1; pointer-events: none; }
-        .card:hover::before { opacity: 0.1; }
-        .card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.8); border-color: var(--accent); }
-        footer { text-align: center; padding: 2rem; background: var(--primary); margin-top: 4rem; border-top: 2px solid var(--accent); }
-        
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
-        @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0); } }
-        @keyframes rotate3d { 0% { transform: rotate3d(1, 1, 1, 0deg); } 100% { transform: rotate3d(1, 1, 1, 360deg); } }
-        @keyframes glow { 0% { box-shadow: 0 0 5px var(--accent); } 50% { box-shadow: 0 0 20px var(--accent); } 100% { box-shadow: 0 0 5px var(--accent); } }
-    
-.gen-class-0 { padding: 0px; margin: 0px; z-index: 0; border-radius: 0px; }
-.gen-class-1 { padding: 1px; margin: 1px; z-index: 1; border-radius: 1px; }
-.gen-class-2 { padding: 2px; margin: 2px; z-index: 2; border-radius: 2px; }
-.gen-class-3 { padding: 3px; margin: 3px; z-index: 3; border-radius: 3px; }
-.gen-class-4 { padding: 4px; margin: 4px; z-index: 4; border-radius: 4px; }
-.gen-class-5 { padding: 5px; margin: 0px; z-index: 5; border-radius: 5px; }
-.gen-class-6 { padding: 6px; margin: 1px; z-index: 6; border-radius: 6px; }
-.gen-class-7 { padding: 7px; margin: 2px; z-index: 7; border-radius: 7px; }
-.gen-class-8 { padding: 8px; margin: 3px; z-index: 8; border-radius: 8px; }
-.gen-class-9 { padding: 9px; margin: 4px; z-index: 9; border-radius: 9px; }
-.gen-class-10 { padding: 0px; margin: 0px; z-index: 10; border-radius: 10px; }
-.gen-class-11 { padding: 1px; margin: 1px; z-index: 11; border-radius: 11px; }
-.gen-class-12 { padding: 2px; margin: 2px; z-index: 12; border-radius: 12px; }
-.gen-class-13 { padding: 3px; margin: 3px; z-index: 13; border-radius: 13px; }
-.gen-class-14 { padding: 4px; margin: 4px; z-index: 14; border-radius: 14px; }
-.gen-class-15 { padding: 5px; margin: 0px; z-index: 15; border-radius: 15px; }
-.gen-class-16 { padding: 6px; margin: 1px; z-index: 16; border-radius: 16px; }
-.gen-class-17 { padding: 7px; margin: 2px; z-index: 17; border-radius: 17px; }
-.gen-class-18 { padding: 8px; margin: 3px; z-index: 18; border-radius: 18px; }
-.gen-class-19 { padding: 9px; margin: 4px; z-index: 19; border-radius: 19px; }
-.gen-class-20 { padding: 0px; margin: 0px; z-index: 20; border-radius: 0px; }
-.gen-class-21 { padding: 1px; margin: 1px; z-index: 21; border-radius: 1px; }
-.gen-class-22 { padding: 2px; margin: 2px; z-index: 22; border-radius: 2px; }
-.gen-class-23 { padding: 3px; margin: 3px; z-index: 23; border-radius: 3px; }
-.gen-class-24 { padding: 4px; margin: 4px; z-index: 24; border-radius: 4px; }
-.gen-class-25 { padding: 5px; margin: 0px; z-index: 25; border-radius: 5px; }
-.gen-class-26 { padding: 6px; margin: 1px; z-index: 26; border-radius: 6px; }
-.gen-class-27 { padding: 7px; margin: 2px; z-index: 27; border-radius: 7px; }
-.gen-class-28 { padding: 8px; margin: 3px; z-index: 28; border-radius: 8px; }
-.gen-class-29 { padding: 9px; margin: 4px; z-index: 29; border-radius: 9px; }
-.gen-class-30 { padding: 0px; margin: 0px; z-index: 30; border-radius: 10px; }
-.gen-class-31 { padding: 1px; margin: 1px; z-index: 31; border-radius: 11px; }
-.gen-class-32 { padding: 2px; margin: 2px; z-index: 32; border-radius: 12px; }
-.gen-class-33 { padding: 3px; margin: 3px; z-index: 33; border-radius: 13px; }
-.gen-class-34 { padding: 4px; margin: 4px; z-index: 34; border-radius: 14px; }
-.gen-class-35 { padding: 5px; margin: 0px; z-index: 35; border-radius: 15px; }
-.gen-class-36 { padding: 6px; margin: 1px; z-index: 36; border-radius: 16px; }
-.gen-class-37 { padding: 7px; margin: 2px; z-index: 37; border-radius: 17px; }
-.gen-class-38 { padding: 8px; margin: 3px; z-index: 38; border-radius: 18px; }
-.gen-class-39 { padding: 9px; margin: 4px; z-index: 39; border-radius: 19px; }
-.gen-class-40 { padding: 0px; margin: 0px; z-index: 40; border-radius: 0px; }
-.gen-class-41 { padding: 1px; margin: 1px; z-index: 41; border-radius: 1px; }
-.gen-class-42 { padding: 2px; margin: 2px; z-index: 42; border-radius: 2px; }
-.gen-class-43 { padding: 3px; margin: 3px; z-index: 43; border-radius: 3px; }
-.gen-class-44 { padding: 4px; margin: 4px; z-index: 44; border-radius: 4px; }
-.gen-class-45 { padding: 5px; margin: 0px; z-index: 45; border-radius: 5px; }
-.gen-class-46 { padding: 6px; margin: 1px; z-index: 46; border-radius: 6px; }
-.gen-class-47 { padding: 7px; margin: 2px; z-index: 47; border-radius: 7px; }
-.gen-class-48 { padding: 8px; margin: 3px; z-index: 48; border-radius: 8px; }
-.gen-class-49 { padding: 9px; margin: 4px; z-index: 49; border-radius: 9px; }
-.gen-class-50 { padding: 0px; margin: 0px; z-index: 50; border-radius: 10px; }
-.gen-class-51 { padding: 1px; margin: 1px; z-index: 51; border-radius: 11px; }
-.gen-class-52 { padding: 2px; margin: 2px; z-index: 52; border-radius: 12px; }
-.gen-class-53 { padding: 3px; margin: 3px; z-index: 53; border-radius: 13px; }
-.gen-class-54 { padding: 4px; margin: 4px; z-index: 54; border-radius: 14px; }
-.gen-class-55 { padding: 5px; margin: 0px; z-index: 55; border-radius: 15px; }
-.gen-class-56 { padding: 6px; margin: 1px; z-index: 56; border-radius: 16px; }
-.gen-class-57 { padding: 7px; margin: 2px; z-index: 57; border-radius: 17px; }
-.gen-class-58 { padding: 8px; margin: 3px; z-index: 58; border-radius: 18px; }
-.gen-class-59 { padding: 9px; margin: 4px; z-index: 59; border-radius: 19px; }
-.gen-class-60 { padding: 0px; margin: 0px; z-index: 60; border-radius: 0px; }
-.gen-class-61 { padding: 1px; margin: 1px; z-index: 61; border-radius: 1px; }
-.gen-class-62 { padding: 2px; margin: 2px; z-index: 62; border-radius: 2px; }
-.gen-class-63 { padding: 3px; margin: 3px; z-index: 63; border-radius: 3px; }
-.gen-class-64 { padding: 4px; margin: 4px; z-index: 64; border-radius: 4px; }
-.gen-class-65 { padding: 5px; margin: 0px; z-index: 65; border-radius: 5px; }
-.gen-class-66 { padding: 6px; margin: 1px; z-index: 66; border-radius: 6px; }
-.gen-class-67 { padding: 7px; margin: 2px; z-index: 67; border-radius: 7px; }
-.gen-class-68 { padding: 8px; margin: 3px; z-index: 68; border-radius: 8px; }
-.gen-class-69 { padding: 9px; margin: 4px; z-index: 69; border-radius: 9px; }
-.gen-class-70 { padding: 0px; margin: 0px; z-index: 70; border-radius: 10px; }
-.gen-class-71 { padding: 1px; margin: 1px; z-index: 71; border-radius: 11px; }
-.gen-class-72 { padding: 2px; margin: 2px; z-index: 72; border-radius: 12px; }
-.gen-class-73 { padding: 3px; margin: 3px; z-index: 73; border-radius: 13px; }
-.gen-class-74 { padding: 4px; margin: 4px; z-index: 74; border-radius: 14px; }
-.gen-class-75 { padding: 5px; margin: 0px; z-index: 75; border-radius: 15px; }
-.gen-class-76 { padding: 6px; margin: 1px; z-index: 76; border-radius: 16px; }
-.gen-class-77 { padding: 7px; margin: 2px; z-index: 77; border-radius: 17px; }
-.gen-class-78 { padding: 8px; margin: 3px; z-index: 78; border-radius: 18px; }
-.gen-class-79 { padding: 9px; margin: 4px; z-index: 79; border-radius: 19px; }
-.gen-class-80 { padding: 0px; margin: 0px; z-index: 80; border-radius: 0px; }
-.gen-class-81 { padding: 1px; margin: 1px; z-index: 81; border-radius: 1px; }
-.gen-class-82 { padding: 2px; margin: 2px; z-index: 82; border-radius: 2px; }
-.gen-class-83 { padding: 3px; margin: 3px; z-index: 83; border-radius: 3px; }
-.gen-class-84 { padding: 4px; margin: 4px; z-index: 84; border-radius: 4px; }
-.gen-class-85 { padding: 5px; margin: 0px; z-index: 85; border-radius: 5px; }
-.gen-class-86 { padding: 6px; margin: 1px; z-index: 86; border-radius: 6px; }
-.gen-class-87 { padding: 7px; margin: 2px; z-index: 87; border-radius: 7px; }
-.gen-class-88 { padding: 8px; margin: 3px; z-index: 88; border-radius: 8px; }
-.gen-class-89 { padding: 9px; margin: 4px; z-index: 89; border-radius: 9px; }
-.gen-class-90 { padding: 0px; margin: 0px; z-index: 90; border-radius: 10px; }
-.gen-class-91 { padding: 1px; margin: 1px; z-index: 91; border-radius: 11px; }
-.gen-class-92 { padding: 2px; margin: 2px; z-index: 92; border-radius: 12px; }
-.gen-class-93 { padding: 3px; margin: 3px; z-index: 93; border-radius: 13px; }
-.gen-class-94 { padding: 4px; margin: 4px; z-index: 94; border-radius: 14px; }
-.gen-class-95 { padding: 5px; margin: 0px; z-index: 95; border-radius: 15px; }
-.gen-class-96 { padding: 6px; margin: 1px; z-index: 96; border-radius: 16px; }
-.gen-class-97 { padding: 7px; margin: 2px; z-index: 97; border-radius: 17px; }
-.gen-class-98 { padding: 8px; margin: 3px; z-index: 98; border-radius: 18px; }
-.gen-class-99 { padding: 9px; margin: 4px; z-index: 99; border-radius: 19px; }
-.gen-class-100 { padding: 0px; margin: 0px; z-index: 100; border-radius: 0px; }
-.gen-class-101 { padding: 1px; margin: 1px; z-index: 101; border-radius: 1px; }
-.gen-class-102 { padding: 2px; margin: 2px; z-index: 102; border-radius: 2px; }
-.gen-class-103 { padding: 3px; margin: 3px; z-index: 103; border-radius: 3px; }
-.gen-class-104 { padding: 4px; margin: 4px; z-index: 104; border-radius: 4px; }
-.gen-class-105 { padding: 5px; margin: 0px; z-index: 105; border-radius: 5px; }
-.gen-class-106 { padding: 6px; margin: 1px; z-index: 106; border-radius: 6px; }
-.gen-class-107 { padding: 7px; margin: 2px; z-index: 107; border-radius: 7px; }
-.gen-class-108 { padding: 8px; margin: 3px; z-index: 108; border-radius: 8px; }
-.gen-class-109 { padding: 9px; margin: 4px; z-index: 109; border-radius: 9px; }
-.gen-class-110 { padding: 0px; margin: 0px; z-index: 110; border-radius: 10px; }
-.gen-class-111 { padding: 1px; margin: 1px; z-index: 111; border-radius: 11px; }
-.gen-class-112 { padding: 2px; margin: 2px; z-index: 112; border-radius: 12px; }
-.gen-class-113 { padding: 3px; margin: 3px; z-index: 113; border-radius: 13px; }
-.gen-class-114 { padding: 4px; margin: 4px; z-index: 114; border-radius: 14px; }
-.gen-class-115 { padding: 5px; margin: 0px; z-index: 115; border-radius: 15px; }
-.gen-class-116 { padding: 6px; margin: 1px; z-index: 116; border-radius: 16px; }
-.gen-class-117 { padding: 7px; margin: 2px; z-index: 117; border-radius: 17px; }
-.gen-class-118 { padding: 8px; margin: 3px; z-index: 118; border-radius: 18px; }
-.gen-class-119 { padding: 9px; margin: 4px; z-index: 119; border-radius: 19px; }
-.gen-class-120 { padding: 0px; margin: 0px; z-index: 120; border-radius: 0px; }
-.gen-class-121 { padding: 1px; margin: 1px; z-index: 121; border-radius: 1px; }
-.gen-class-122 { padding: 2px; margin: 2px; z-index: 122; border-radius: 2px; }
-.gen-class-123 { padding: 3px; margin: 3px; z-index: 123; border-radius: 3px; }
-.gen-class-124 { padding: 4px; margin: 4px; z-index: 124; border-radius: 4px; }
-.gen-class-125 { padding: 5px; margin: 0px; z-index: 125; border-radius: 5px; }
-.gen-class-126 { padding: 6px; margin: 1px; z-index: 126; border-radius: 6px; }
-.gen-class-127 { padding: 7px; margin: 2px; z-index: 127; border-radius: 7px; }
-.gen-class-128 { padding: 8px; margin: 3px; z-index: 128; border-radius: 8px; }
-.gen-class-129 { padding: 9px; margin: 4px; z-index: 129; border-radius: 9px; }
-.gen-class-130 { padding: 0px; margin: 0px; z-index: 130; border-radius: 10px; }
-.gen-class-131 { padding: 1px; margin: 1px; z-index: 131; border-radius: 11px; }
-.gen-class-132 { padding: 2px; margin: 2px; z-index: 132; border-radius: 12px; }
-.gen-class-133 { padding: 3px; margin: 3px; z-index: 133; border-radius: 13px; }
-.gen-class-134 { padding: 4px; margin: 4px; z-index: 134; border-radius: 14px; }
-.gen-class-135 { padding: 5px; margin: 0px; z-index: 135; border-radius: 15px; }
-.gen-class-136 { padding: 6px; margin: 1px; z-index: 136; border-radius: 16px; }
-.gen-class-137 { padding: 7px; margin: 2px; z-index: 137; border-radius: 17px; }
-.gen-class-138 { padding: 8px; margin: 3px; z-index: 138; border-radius: 18px; }
-.gen-class-139 { padding: 9px; margin: 4px; z-index: 139; border-radius: 19px; }
-.gen-class-140 { padding: 0px; margin: 0px; z-index: 140; border-radius: 0px; }
-.gen-class-141 { padding: 1px; margin: 1px; z-index: 141; border-radius: 1px; }
-.gen-class-142 { padding: 2px; margin: 2px; z-index: 142; border-radius: 2px; }
-.gen-class-143 { padding: 3px; margin: 3px; z-index: 143; border-radius: 3px; }
-.gen-class-144 { padding: 4px; margin: 4px; z-index: 144; border-radius: 4px; }
-.gen-class-145 { padding: 5px; margin: 0px; z-index: 145; border-radius: 5px; }
-.gen-class-146 { padding: 6px; margin: 1px; z-index: 146; border-radius: 6px; }
-.gen-class-147 { padding: 7px; margin: 2px; z-index: 147; border-radius: 7px; }
-.gen-class-148 { padding: 8px; margin: 3px; z-index: 148; border-radius: 8px; }
-.gen-class-149 { padding: 9px; margin: 4px; z-index: 149; border-radius: 9px; }
-.gen-class-150 { padding: 0px; margin: 0px; z-index: 150; border-radius: 10px; }
-.gen-class-151 { padding: 1px; margin: 1px; z-index: 151; border-radius: 11px; }
-.gen-class-152 { padding: 2px; margin: 2px; z-index: 152; border-radius: 12px; }
-.gen-class-153 { padding: 3px; margin: 3px; z-index: 153; border-radius: 13px; }
-.gen-class-154 { padding: 4px; margin: 4px; z-index: 154; border-radius: 14px; }
-.gen-class-155 { padding: 5px; margin: 0px; z-index: 155; border-radius: 15px; }
-.gen-class-156 { padding: 6px; margin: 1px; z-index: 156; border-radius: 16px; }
-.gen-class-157 { padding: 7px; margin: 2px; z-index: 157; border-radius: 17px; }
-.gen-class-158 { padding: 8px; margin: 3px; z-index: 158; border-radius: 18px; }
-.gen-class-159 { padding: 9px; margin: 4px; z-index: 159; border-radius: 19px; }
-.gen-class-160 { padding: 0px; margin: 0px; z-index: 160; border-radius: 0px; }
-.gen-class-161 { padding: 1px; margin: 1px; z-index: 161; border-radius: 1px; }
-.gen-class-162 { padding: 2px; margin: 2px; z-index: 162; border-radius: 2px; }
-.gen-class-163 { padding: 3px; margin: 3px; z-index: 163; border-radius: 3px; }
-.gen-class-164 { padding: 4px; margin: 4px; z-index: 164; border-radius: 4px; }
-.gen-class-165 { padding: 5px; margin: 0px; z-index: 165; border-radius: 5px; }
-.gen-class-166 { padding: 6px; margin: 1px; z-index: 166; border-radius: 6px; }
-.gen-class-167 { padding: 7px; margin: 2px; z-index: 167; border-radius: 7px; }
-.gen-class-168 { padding: 8px; margin: 3px; z-index: 168; border-radius: 8px; }
-.gen-class-169 { padding: 9px; margin: 4px; z-index: 169; border-radius: 9px; }
-.gen-class-170 { padding: 0px; margin: 0px; z-index: 170; border-radius: 10px; }
-.gen-class-171 { padding: 1px; margin: 1px; z-index: 171; border-radius: 11px; }
-.gen-class-172 { padding: 2px; margin: 2px; z-index: 172; border-radius: 12px; }
-.gen-class-173 { padding: 3px; margin: 3px; z-index: 173; border-radius: 13px; }
-.gen-class-174 { padding: 4px; margin: 4px; z-index: 174; border-radius: 14px; }
-.gen-class-175 { padding: 5px; margin: 0px; z-index: 175; border-radius: 15px; }
-.gen-class-176 { padding: 6px; margin: 1px; z-index: 176; border-radius: 16px; }
-.gen-class-177 { padding: 7px; margin: 2px; z-index: 177; border-radius: 17px; }
-.gen-class-178 { padding: 8px; margin: 3px; z-index: 178; border-radius: 18px; }
-.gen-class-179 { padding: 9px; margin: 4px; z-index: 179; border-radius: 19px; }
-.gen-class-180 { padding: 0px; margin: 0px; z-index: 180; border-radius: 0px; }
-.gen-class-181 { padding: 1px; margin: 1px; z-index: 181; border-radius: 1px; }
-.gen-class-182 { padding: 2px; margin: 2px; z-index: 182; border-radius: 2px; }
-.gen-class-183 { padding: 3px; margin: 3px; z-index: 183; border-radius: 3px; }
-.gen-class-184 { padding: 4px; margin: 4px; z-index: 184; border-radius: 4px; }
-.gen-class-185 { padding: 5px; margin: 0px; z-index: 185; border-radius: 5px; }
-.gen-class-186 { padding: 6px; margin: 1px; z-index: 186; border-radius: 6px; }
-.gen-class-187 { padding: 7px; margin: 2px; z-index: 187; border-radius: 7px; }
-.gen-class-188 { padding: 8px; margin: 3px; z-index: 188; border-radius: 8px; }
-.gen-class-189 { padding: 9px; margin: 4px; z-index: 189; border-radius: 9px; }
-.gen-class-190 { padding: 0px; margin: 0px; z-index: 190; border-radius: 10px; }
-.gen-class-191 { padding: 1px; margin: 1px; z-index: 191; border-radius: 11px; }
-.gen-class-192 { padding: 2px; margin: 2px; z-index: 192; border-radius: 12px; }
-.gen-class-193 { padding: 3px; margin: 3px; z-index: 193; border-radius: 13px; }
-.gen-class-194 { padding: 4px; margin: 4px; z-index: 194; border-radius: 14px; }
-.gen-class-195 { padding: 5px; margin: 0px; z-index: 195; border-radius: 15px; }
-.gen-class-196 { padding: 6px; margin: 1px; z-index: 196; border-radius: 16px; }
-.gen-class-197 { padding: 7px; margin: 2px; z-index: 197; border-radius: 17px; }
-.gen-class-198 { padding: 8px; margin: 3px; z-index: 198; border-radius: 18px; }
-.gen-class-199 { padding: 9px; margin: 4px; z-index: 199; border-radius: 19px; }
-.gen-class-200 { padding: 0px; margin: 0px; z-index: 200; border-radius: 0px; }
-.gen-class-201 { padding: 1px; margin: 1px; z-index: 201; border-radius: 1px; }
-.gen-class-202 { padding: 2px; margin: 2px; z-index: 202; border-radius: 2px; }
-.gen-class-203 { padding: 3px; margin: 3px; z-index: 203; border-radius: 3px; }
-.gen-class-204 { padding: 4px; margin: 4px; z-index: 204; border-radius: 4px; }
-.gen-class-205 { padding: 5px; margin: 0px; z-index: 205; border-radius: 5px; }
-.gen-class-206 { padding: 6px; margin: 1px; z-index: 206; border-radius: 6px; }
-.gen-class-207 { padding: 7px; margin: 2px; z-index: 207; border-radius: 7px; }
-.gen-class-208 { padding: 8px; margin: 3px; z-index: 208; border-radius: 8px; }
-.gen-class-209 { padding: 9px; margin: 4px; z-index: 209; border-radius: 9px; }
-.gen-class-210 { padding: 0px; margin: 0px; z-index: 210; border-radius: 10px; }
-.gen-class-211 { padding: 1px; margin: 1px; z-index: 211; border-radius: 11px; }
-.gen-class-212 { padding: 2px; margin: 2px; z-index: 212; border-radius: 12px; }
-.gen-class-213 { padding: 3px; margin: 3px; z-index: 213; border-radius: 13px; }
-.gen-class-214 { padding: 4px; margin: 4px; z-index: 214; border-radius: 14px; }
-.gen-class-215 { padding: 5px; margin: 0px; z-index: 215; border-radius: 15px; }
-.gen-class-216 { padding: 6px; margin: 1px; z-index: 216; border-radius: 16px; }
-.gen-class-217 { padding: 7px; margin: 2px; z-index: 217; border-radius: 17px; }
-.gen-class-218 { padding: 8px; margin: 3px; z-index: 218; border-radius: 18px; }
-.gen-class-219 { padding: 9px; margin: 4px; z-index: 219; border-radius: 19px; }
-.gen-class-220 { padding: 0px; margin: 0px; z-index: 220; border-radius: 0px; }
-.gen-class-221 { padding: 1px; margin: 1px; z-index: 221; border-radius: 1px; }
-.gen-class-222 { padding: 2px; margin: 2px; z-index: 222; border-radius: 2px; }
-.gen-class-223 { padding: 3px; margin: 3px; z-index: 223; border-radius: 3px; }
-.gen-class-224 { padding: 4px; margin: 4px; z-index: 224; border-radius: 4px; }
-.gen-class-225 { padding: 5px; margin: 0px; z-index: 225; border-radius: 5px; }
-.gen-class-226 { padding: 6px; margin: 1px; z-index: 226; border-radius: 6px; }
-.gen-class-227 { padding: 7px; margin: 2px; z-index: 227; border-radius: 7px; }
-.gen-class-228 { padding: 8px; margin: 3px; z-index: 228; border-radius: 8px; }
-.gen-class-229 { padding: 9px; margin: 4px; z-index: 229; border-radius: 9px; }
-.gen-class-230 { padding: 0px; margin: 0px; z-index: 230; border-radius: 10px; }
-.gen-class-231 { padding: 1px; margin: 1px; z-index: 231; border-radius: 11px; }
-.gen-class-232 { padding: 2px; margin: 2px; z-index: 232; border-radius: 12px; }
-.gen-class-233 { padding: 3px; margin: 3px; z-index: 233; border-radius: 13px; }
-.gen-class-234 { padding: 4px; margin: 4px; z-index: 234; border-radius: 14px; }
-.gen-class-235 { padding: 5px; margin: 0px; z-index: 235; border-radius: 15px; }
-.gen-class-236 { padding: 6px; margin: 1px; z-index: 236; border-radius: 16px; }
-.gen-class-237 { padding: 7px; margin: 2px; z-index: 237; border-radius: 17px; }
-.gen-class-238 { padding: 8px; margin: 3px; z-index: 238; border-radius: 18px; }
-.gen-class-239 { padding: 9px; margin: 4px; z-index: 239; border-radius: 19px; }
-.gen-class-240 { padding: 0px; margin: 0px; z-index: 240; border-radius: 0px; }
-.gen-class-241 { padding: 1px; margin: 1px; z-index: 241; border-radius: 1px; }
-.gen-class-242 { padding: 2px; margin: 2px; z-index: 242; border-radius: 2px; }
-.gen-class-243 { padding: 3px; margin: 3px; z-index: 243; border-radius: 3px; }
-.gen-class-244 { padding: 4px; margin: 4px; z-index: 244; border-radius: 4px; }
-.gen-class-245 { padding: 5px; margin: 0px; z-index: 245; border-radius: 5px; }
-.gen-class-246 { padding: 6px; margin: 1px; z-index: 246; border-radius: 6px; }
-.gen-class-247 { padding: 7px; margin: 2px; z-index: 247; border-radius: 7px; }
-.gen-class-248 { padding: 8px; margin: 3px; z-index: 248; border-radius: 8px; }
-.gen-class-249 { padding: 9px; margin: 4px; z-index: 249; border-radius: 9px; }
-.gen-class-250 { padding: 0px; margin: 0px; z-index: 250; border-radius: 10px; }
-.gen-class-251 { padding: 1px; margin: 1px; z-index: 251; border-radius: 11px; }
-.gen-class-252 { padding: 2px; margin: 2px; z-index: 252; border-radius: 12px; }
-.gen-class-253 { padding: 3px; margin: 3px; z-index: 253; border-radius: 13px; }
-.gen-class-254 { padding: 4px; margin: 4px; z-index: 254; border-radius: 14px; }
-.gen-class-255 { padding: 5px; margin: 0px; z-index: 255; border-radius: 15px; }
-.gen-class-256 { padding: 6px; margin: 1px; z-index: 256; border-radius: 16px; }
-.gen-class-257 { padding: 7px; margin: 2px; z-index: 257; border-radius: 17px; }
-.gen-class-258 { padding: 8px; margin: 3px; z-index: 258; border-radius: 18px; }
-.gen-class-259 { padding: 9px; margin: 4px; z-index: 259; border-radius: 19px; }
-.gen-class-260 { padding: 0px; margin: 0px; z-index: 260; border-radius: 0px; }
-.gen-class-261 { padding: 1px; margin: 1px; z-index: 261; border-radius: 1px; }
-.gen-class-262 { padding: 2px; margin: 2px; z-index: 262; border-radius: 2px; }
-.gen-class-263 { padding: 3px; margin: 3px; z-index: 263; border-radius: 3px; }
-.gen-class-264 { padding: 4px; margin: 4px; z-index: 264; border-radius: 4px; }
-.gen-class-265 { padding: 5px; margin: 0px; z-index: 265; border-radius: 5px; }
-.gen-class-266 { padding: 6px; margin: 1px; z-index: 266; border-radius: 6px; }
-.gen-class-267 { padding: 7px; margin: 2px; z-index: 267; border-radius: 7px; }
-.gen-class-268 { padding: 8px; margin: 3px; z-index: 268; border-radius: 8px; }
-.gen-class-269 { padding: 9px; margin: 4px; z-index: 269; border-radius: 9px; }
-.gen-class-270 { padding: 0px; margin: 0px; z-index: 270; border-radius: 10px; }
-.gen-class-271 { padding: 1px; margin: 1px; z-index: 271; border-radius: 11px; }
-.gen-class-272 { padding: 2px; margin: 2px; z-index: 272; border-radius: 12px; }
-.gen-class-273 { padding: 3px; margin: 3px; z-index: 273; border-radius: 13px; }
-.gen-class-274 { padding: 4px; margin: 4px; z-index: 274; border-radius: 14px; }
-.gen-class-275 { padding: 5px; margin: 0px; z-index: 275; border-radius: 15px; }
-.gen-class-276 { padding: 6px; margin: 1px; z-index: 276; border-radius: 16px; }
-.gen-class-277 { padding: 7px; margin: 2px; z-index: 277; border-radius: 17px; }
-.gen-class-278 { padding: 8px; margin: 3px; z-index: 278; border-radius: 18px; }
-.gen-class-279 { padding: 9px; margin: 4px; z-index: 279; border-radius: 19px; }
-.gen-class-280 { padding: 0px; margin: 0px; z-index: 280; border-radius: 0px; }
-.gen-class-281 { padding: 1px; margin: 1px; z-index: 281; border-radius: 1px; }
-.gen-class-282 { padding: 2px; margin: 2px; z-index: 282; border-radius: 2px; }
-.gen-class-283 { padding: 3px; margin: 3px; z-index: 283; border-radius: 3px; }
-.gen-class-284 { padding: 4px; margin: 4px; z-index: 284; border-radius: 4px; }
-.gen-class-285 { padding: 5px; margin: 0px; z-index: 285; border-radius: 5px; }
-.gen-class-286 { padding: 6px; margin: 1px; z-index: 286; border-radius: 6px; }
-.gen-class-287 { padding: 7px; margin: 2px; z-index: 287; border-radius: 7px; }
-.gen-class-288 { padding: 8px; margin: 3px; z-index: 288; border-radius: 8px; }
-.gen-class-289 { padding: 9px; margin: 4px; z-index: 289; border-radius: 9px; }
-.gen-class-290 { padding: 0px; margin: 0px; z-index: 290; border-radius: 10px; }
-.gen-class-291 { padding: 1px; margin: 1px; z-index: 291; border-radius: 11px; }
-.gen-class-292 { padding: 2px; margin: 2px; z-index: 292; border-radius: 12px; }
-.gen-class-293 { padding: 3px; margin: 3px; z-index: 293; border-radius: 13px; }
-.gen-class-294 { padding: 4px; margin: 4px; z-index: 294; border-radius: 14px; }
-.gen-class-295 { padding: 5px; margin: 0px; z-index: 295; border-radius: 15px; }
-.gen-class-296 { padding: 6px; margin: 1px; z-index: 296; border-radius: 16px; }
-.gen-class-297 { padding: 7px; margin: 2px; z-index: 297; border-radius: 17px; }
-.gen-class-298 { padding: 8px; margin: 3px; z-index: 298; border-radius: 18px; }
-.gen-class-299 { padding: 9px; margin: 4px; z-index: 299; border-radius: 19px; }
-.gen-class-300 { padding: 0px; margin: 0px; z-index: 300; border-radius: 0px; }
-.gen-class-301 { padding: 1px; margin: 1px; z-index: 301; border-radius: 1px; }
-.gen-class-302 { padding: 2px; margin: 2px; z-index: 302; border-radius: 2px; }
-.gen-class-303 { padding: 3px; margin: 3px; z-index: 303; border-radius: 3px; }
-.gen-class-304 { padding: 4px; margin: 4px; z-index: 304; border-radius: 4px; }
-.gen-class-305 { padding: 5px; margin: 0px; z-index: 305; border-radius: 5px; }
-.gen-class-306 { padding: 6px; margin: 1px; z-index: 306; border-radius: 6px; }
-.gen-class-307 { padding: 7px; margin: 2px; z-index: 307; border-radius: 7px; }
-.gen-class-308 { padding: 8px; margin: 3px; z-index: 308; border-radius: 8px; }
-.gen-class-309 { padding: 9px; margin: 4px; z-index: 309; border-radius: 9px; }
-.gen-class-310 { padding: 0px; margin: 0px; z-index: 310; border-radius: 10px; }
-.gen-class-311 { padding: 1px; margin: 1px; z-index: 311; border-radius: 11px; }
-.gen-class-312 { padding: 2px; margin: 2px; z-index: 312; border-radius: 12px; }
-.gen-class-313 { padding: 3px; margin: 3px; z-index: 313; border-radius: 13px; }
-.gen-class-314 { padding: 4px; margin: 4px; z-index: 314; border-radius: 14px; }
-.gen-class-315 { padding: 5px; margin: 0px; z-index: 315; border-radius: 15px; }
-.gen-class-316 { padding: 6px; margin: 1px; z-index: 316; border-radius: 16px; }
-.gen-class-317 { padding: 7px; margin: 2px; z-index: 317; border-radius: 17px; }
-.gen-class-318 { padding: 8px; margin: 3px; z-index: 318; border-radius: 18px; }
-.gen-class-319 { padding: 9px; margin: 4px; z-index: 319; border-radius: 19px; }
-.gen-class-320 { padding: 0px; margin: 0px; z-index: 320; border-radius: 0px; }
-.gen-class-321 { padding: 1px; margin: 1px; z-index: 321; border-radius: 1px; }
-.gen-class-322 { padding: 2px; margin: 2px; z-index: 322; border-radius: 2px; }
-.gen-class-323 { padding: 3px; margin: 3px; z-index: 323; border-radius: 3px; }
-.gen-class-324 { padding: 4px; margin: 4px; z-index: 324; border-radius: 4px; }
-.gen-class-325 { padding: 5px; margin: 0px; z-index: 325; border-radius: 5px; }
-.gen-class-326 { padding: 6px; margin: 1px; z-index: 326; border-radius: 6px; }
-.gen-class-327 { padding: 7px; margin: 2px; z-index: 327; border-radius: 7px; }
-.gen-class-328 { padding: 8px; margin: 3px; z-index: 328; border-radius: 8px; }
-.gen-class-329 { padding: 9px; margin: 4px; z-index: 329; border-radius: 9px; }
-.gen-class-330 { padding: 0px; margin: 0px; z-index: 330; border-radius: 10px; }
-.gen-class-331 { padding: 1px; margin: 1px; z-index: 331; border-radius: 11px; }
-.gen-class-332 { padding: 2px; margin: 2px; z-index: 332; border-radius: 12px; }
-.gen-class-333 { padding: 3px; margin: 3px; z-index: 333; border-radius: 13px; }
-.gen-class-334 { padding: 4px; margin: 4px; z-index: 334; border-radius: 14px; }
-.gen-class-335 { padding: 5px; margin: 0px; z-index: 335; border-radius: 15px; }
-.gen-class-336 { padding: 6px; margin: 1px; z-index: 336; border-radius: 16px; }
-.gen-class-337 { padding: 7px; margin: 2px; z-index: 337; border-radius: 17px; }
-.gen-class-338 { padding: 8px; margin: 3px; z-index: 338; border-radius: 18px; }
-.gen-class-339 { padding: 9px; margin: 4px; z-index: 339; border-radius: 19px; }
-.gen-class-340 { padding: 0px; margin: 0px; z-index: 340; border-radius: 0px; }
-.gen-class-341 { padding: 1px; margin: 1px; z-index: 341; border-radius: 1px; }
-.gen-class-342 { padding: 2px; margin: 2px; z-index: 342; border-radius: 2px; }
-.gen-class-343 { padding: 3px; margin: 3px; z-index: 343; border-radius: 3px; }
-.gen-class-344 { padding: 4px; margin: 4px; z-index: 344; border-radius: 4px; }
-.gen-class-345 { padding: 5px; margin: 0px; z-index: 345; border-radius: 5px; }
-.gen-class-346 { padding: 6px; margin: 1px; z-index: 346; border-radius: 6px; }
-.gen-class-347 { padding: 7px; margin: 2px; z-index: 347; border-radius: 7px; }
-.gen-class-348 { padding: 8px; margin: 3px; z-index: 348; border-radius: 8px; }
-.gen-class-349 { padding: 9px; margin: 4px; z-index: 349; border-radius: 9px; }
-.gen-class-350 { padding: 0px; margin: 0px; z-index: 350; border-radius: 10px; }
-.gen-class-351 { padding: 1px; margin: 1px; z-index: 351; border-radius: 11px; }
-.gen-class-352 { padding: 2px; margin: 2px; z-index: 352; border-radius: 12px; }
-.gen-class-353 { padding: 3px; margin: 3px; z-index: 353; border-radius: 13px; }
-.gen-class-354 { padding: 4px; margin: 4px; z-index: 354; border-radius: 14px; }
-.gen-class-355 { padding: 5px; margin: 0px; z-index: 355; border-radius: 15px; }
-.gen-class-356 { padding: 6px; margin: 1px; z-index: 356; border-radius: 16px; }
-.gen-class-357 { padding: 7px; margin: 2px; z-index: 357; border-radius: 17px; }
-.gen-class-358 { padding: 8px; margin: 3px; z-index: 358; border-radius: 18px; }
-.gen-class-359 { padding: 9px; margin: 4px; z-index: 359; border-radius: 19px; }
-.gen-class-360 { padding: 0px; margin: 0px; z-index: 360; border-radius: 0px; }
-.gen-class-361 { padding: 1px; margin: 1px; z-index: 361; border-radius: 1px; }
-.gen-class-362 { padding: 2px; margin: 2px; z-index: 362; border-radius: 2px; }
-.gen-class-363 { padding: 3px; margin: 3px; z-index: 363; border-radius: 3px; }
-.gen-class-364 { padding: 4px; margin: 4px; z-index: 364; border-radius: 4px; }
-.gen-class-365 { padding: 5px; margin: 0px; z-index: 365; border-radius: 5px; }
-.gen-class-366 { padding: 6px; margin: 1px; z-index: 366; border-radius: 6px; }
-.gen-class-367 { padding: 7px; margin: 2px; z-index: 367; border-radius: 7px; }
-.gen-class-368 { padding: 8px; margin: 3px; z-index: 368; border-radius: 8px; }
-.gen-class-369 { padding: 9px; margin: 4px; z-index: 369; border-radius: 9px; }
-.gen-class-370 { padding: 0px; margin: 0px; z-index: 370; border-radius: 10px; }
-.gen-class-371 { padding: 1px; margin: 1px; z-index: 371; border-radius: 11px; }
-.gen-class-372 { padding: 2px; margin: 2px; z-index: 372; border-radius: 12px; }
-.gen-class-373 { padding: 3px; margin: 3px; z-index: 373; border-radius: 13px; }
-.gen-class-374 { padding: 4px; margin: 4px; z-index: 374; border-radius: 14px; }
-.gen-class-375 { padding: 5px; margin: 0px; z-index: 375; border-radius: 15px; }
-.gen-class-376 { padding: 6px; margin: 1px; z-index: 376; border-radius: 16px; }
-.gen-class-377 { padding: 7px; margin: 2px; z-index: 377; border-radius: 17px; }
-.gen-class-378 { padding: 8px; margin: 3px; z-index: 378; border-radius: 18px; }
-.gen-class-379 { padding: 9px; margin: 4px; z-index: 379; border-radius: 19px; }
-.gen-class-380 { padding: 0px; margin: 0px; z-index: 380; border-radius: 0px; }
-.gen-class-381 { padding: 1px; margin: 1px; z-index: 381; border-radius: 1px; }
-.gen-class-382 { padding: 2px; margin: 2px; z-index: 382; border-radius: 2px; }
-.gen-class-383 { padding: 3px; margin: 3px; z-index: 383; border-radius: 3px; }
-.gen-class-384 { padding: 4px; margin: 4px; z-index: 384; border-radius: 4px; }
-.gen-class-385 { padding: 5px; margin: 0px; z-index: 385; border-radius: 5px; }
-.gen-class-386 { padding: 6px; margin: 1px; z-index: 386; border-radius: 6px; }
-.gen-class-387 { padding: 7px; margin: 2px; z-index: 387; border-radius: 7px; }
-.gen-class-388 { padding: 8px; margin: 3px; z-index: 388; border-radius: 8px; }
-.gen-class-389 { padding: 9px; margin: 4px; z-index: 389; border-radius: 9px; }
-.gen-class-390 { padding: 0px; margin: 0px; z-index: 390; border-radius: 10px; }
-.gen-class-391 { padding: 1px; margin: 1px; z-index: 391; border-radius: 11px; }
-.gen-class-392 { padding: 2px; margin: 2px; z-index: 392; border-radius: 12px; }
-.gen-class-393 { padding: 3px; margin: 3px; z-index: 393; border-radius: 13px; }
-.gen-class-394 { padding: 4px; margin: 4px; z-index: 394; border-radius: 14px; }
-.gen-class-395 { padding: 5px; margin: 0px; z-index: 395; border-radius: 15px; }
-.gen-class-396 { padding: 6px; margin: 1px; z-index: 396; border-radius: 16px; }
-.gen-class-397 { padding: 7px; margin: 2px; z-index: 397; border-radius: 17px; }
-.gen-class-398 { padding: 8px; margin: 3px; z-index: 398; border-radius: 18px; }
-.gen-class-399 { padding: 9px; margin: 4px; z-index: 399; border-radius: 19px; }
-.gen-class-400 { padding: 0px; margin: 0px; z-index: 400; border-radius: 0px; }
-.gen-class-401 { padding: 1px; margin: 1px; z-index: 401; border-radius: 1px; }
-.gen-class-402 { padding: 2px; margin: 2px; z-index: 402; border-radius: 2px; }
-.gen-class-403 { padding: 3px; margin: 3px; z-index: 403; border-radius: 3px; }
-.gen-class-404 { padding: 4px; margin: 4px; z-index: 404; border-radius: 4px; }
-.gen-class-405 { padding: 5px; margin: 0px; z-index: 405; border-radius: 5px; }
-.gen-class-406 { padding: 6px; margin: 1px; z-index: 406; border-radius: 6px; }
-.gen-class-407 { padding: 7px; margin: 2px; z-index: 407; border-radius: 7px; }
-.gen-class-408 { padding: 8px; margin: 3px; z-index: 408; border-radius: 8px; }
-.gen-class-409 { padding: 9px; margin: 4px; z-index: 409; border-radius: 9px; }
-.gen-class-410 { padding: 0px; margin: 0px; z-index: 410; border-radius: 10px; }
-.gen-class-411 { padding: 1px; margin: 1px; z-index: 411; border-radius: 11px; }
-.gen-class-412 { padding: 2px; margin: 2px; z-index: 412; border-radius: 12px; }
-.gen-class-413 { padding: 3px; margin: 3px; z-index: 413; border-radius: 13px; }
-.gen-class-414 { padding: 4px; margin: 4px; z-index: 414; border-radius: 14px; }
-.gen-class-415 { padding: 5px; margin: 0px; z-index: 415; border-radius: 15px; }
-.gen-class-416 { padding: 6px; margin: 1px; z-index: 416; border-radius: 16px; }
-.gen-class-417 { padding: 7px; margin: 2px; z-index: 417; border-radius: 17px; }
-.gen-class-418 { padding: 8px; margin: 3px; z-index: 418; border-radius: 18px; }
-.gen-class-419 { padding: 9px; margin: 4px; z-index: 419; border-radius: 19px; }
-.gen-class-420 { padding: 0px; margin: 0px; z-index: 420; border-radius: 0px; }
-.gen-class-421 { padding: 1px; margin: 1px; z-index: 421; border-radius: 1px; }
-.gen-class-422 { padding: 2px; margin: 2px; z-index: 422; border-radius: 2px; }
-.gen-class-423 { padding: 3px; margin: 3px; z-index: 423; border-radius: 3px; }
-.gen-class-424 { padding: 4px; margin: 4px; z-index: 424; border-radius: 4px; }
-.gen-class-425 { padding: 5px; margin: 0px; z-index: 425; border-radius: 5px; }
-.gen-class-426 { padding: 6px; margin: 1px; z-index: 426; border-radius: 6px; }
-.gen-class-427 { padding: 7px; margin: 2px; z-index: 427; border-radius: 7px; }
-.gen-class-428 { padding: 8px; margin: 3px; z-index: 428; border-radius: 8px; }
-.gen-class-429 { padding: 9px; margin: 4px; z-index: 429; border-radius: 9px; }
-.gen-class-430 { padding: 0px; margin: 0px; z-index: 430; border-radius: 10px; }
-.gen-class-431 { padding: 1px; margin: 1px; z-index: 431; border-radius: 11px; }
-.gen-class-432 { padding: 2px; margin: 2px; z-index: 432; border-radius: 12px; }
-.gen-class-433 { padding: 3px; margin: 3px; z-index: 433; border-radius: 13px; }
-.gen-class-434 { padding: 4px; margin: 4px; z-index: 434; border-radius: 14px; }
-.gen-class-435 { padding: 5px; margin: 0px; z-index: 435; border-radius: 15px; }
-.gen-class-436 { padding: 6px; margin: 1px; z-index: 436; border-radius: 16px; }
-.gen-class-437 { padding: 7px; margin: 2px; z-index: 437; border-radius: 17px; }
-.gen-class-438 { padding: 8px; margin: 3px; z-index: 438; border-radius: 18px; }
-.gen-class-439 { padding: 9px; margin: 4px; z-index: 439; border-radius: 19px; }
-.gen-class-440 { padding: 0px; margin: 0px; z-index: 440; border-radius: 0px; }
-.gen-class-441 { padding: 1px; margin: 1px; z-index: 441; border-radius: 1px; }
-.gen-class-442 { padding: 2px; margin: 2px; z-index: 442; border-radius: 2px; }
-.gen-class-443 { padding: 3px; margin: 3px; z-index: 443; border-radius: 3px; }
-.gen-class-444 { padding: 4px; margin: 4px; z-index: 444; border-radius: 4px; }
-.gen-class-445 { padding: 5px; margin: 0px; z-index: 445; border-radius: 5px; }
-.gen-class-446 { padding: 6px; margin: 1px; z-index: 446; border-radius: 6px; }
-.gen-class-447 { padding: 7px; margin: 2px; z-index: 447; border-radius: 7px; }
-.gen-class-448 { padding: 8px; margin: 3px; z-index: 448; border-radius: 8px; }
-.gen-class-449 { padding: 9px; margin: 4px; z-index: 449; border-radius: 9px; }
-.gen-class-450 { padding: 0px; margin: 0px; z-index: 450; border-radius: 10px; }
-.gen-class-451 { padding: 1px; margin: 1px; z-index: 451; border-radius: 11px; }
-.gen-class-452 { padding: 2px; margin: 2px; z-index: 452; border-radius: 12px; }
-.gen-class-453 { padding: 3px; margin: 3px; z-index: 453; border-radius: 13px; }
-.gen-class-454 { padding: 4px; margin: 4px; z-index: 454; border-radius: 14px; }
-.gen-class-455 { padding: 5px; margin: 0px; z-index: 455; border-radius: 15px; }
-.gen-class-456 { padding: 6px; margin: 1px; z-index: 456; border-radius: 16px; }
-.gen-class-457 { padding: 7px; margin: 2px; z-index: 457; border-radius: 17px; }
-.gen-class-458 { padding: 8px; margin: 3px; z-index: 458; border-radius: 18px; }
-.gen-class-459 { padding: 9px; margin: 4px; z-index: 459; border-radius: 19px; }
-.gen-class-460 { padding: 0px; margin: 0px; z-index: 460; border-radius: 0px; }
-.gen-class-461 { padding: 1px; margin: 1px; z-index: 461; border-radius: 1px; }
-.gen-class-462 { padding: 2px; margin: 2px; z-index: 462; border-radius: 2px; }
-.gen-class-463 { padding: 3px; margin: 3px; z-index: 463; border-radius: 3px; }
-.gen-class-464 { padding: 4px; margin: 4px; z-index: 464; border-radius: 4px; }
-.gen-class-465 { padding: 5px; margin: 0px; z-index: 465; border-radius: 5px; }
-.gen-class-466 { padding: 6px; margin: 1px; z-index: 466; border-radius: 6px; }
-.gen-class-467 { padding: 7px; margin: 2px; z-index: 467; border-radius: 7px; }
-.gen-class-468 { padding: 8px; margin: 3px; z-index: 468; border-radius: 8px; }
-.gen-class-469 { padding: 9px; margin: 4px; z-index: 469; border-radius: 9px; }
-.gen-class-470 { padding: 0px; margin: 0px; z-index: 470; border-radius: 10px; }
-.gen-class-471 { padding: 1px; margin: 1px; z-index: 471; border-radius: 11px; }
-.gen-class-472 { padding: 2px; margin: 2px; z-index: 472; border-radius: 12px; }
-.gen-class-473 { padding: 3px; margin: 3px; z-index: 473; border-radius: 13px; }
-.gen-class-474 { padding: 4px; margin: 4px; z-index: 474; border-radius: 14px; }
-.gen-class-475 { padding: 5px; margin: 0px; z-index: 475; border-radius: 15px; }
-.gen-class-476 { padding: 6px; margin: 1px; z-index: 476; border-radius: 16px; }
-.gen-class-477 { padding: 7px; margin: 2px; z-index: 477; border-radius: 17px; }
-.gen-class-478 { padding: 8px; margin: 3px; z-index: 478; border-radius: 18px; }
-.gen-class-479 { padding: 9px; margin: 4px; z-index: 479; border-radius: 19px; }
-.gen-class-480 { padding: 0px; margin: 0px; z-index: 480; border-radius: 0px; }
-.gen-class-481 { padding: 1px; margin: 1px; z-index: 481; border-radius: 1px; }
-.gen-class-482 { padding: 2px; margin: 2px; z-index: 482; border-radius: 2px; }
-.gen-class-483 { padding: 3px; margin: 3px; z-index: 483; border-radius: 3px; }
-.gen-class-484 { padding: 4px; margin: 4px; z-index: 484; border-radius: 4px; }
-.gen-class-485 { padding: 5px; margin: 0px; z-index: 485; border-radius: 5px; }
-.gen-class-486 { padding: 6px; margin: 1px; z-index: 486; border-radius: 6px; }
-.gen-class-487 { padding: 7px; margin: 2px; z-index: 487; border-radius: 7px; }
-.gen-class-488 { padding: 8px; margin: 3px; z-index: 488; border-radius: 8px; }
-.gen-class-489 { padding: 9px; margin: 4px; z-index: 489; border-radius: 9px; }
-.gen-class-490 { padding: 0px; margin: 0px; z-index: 490; border-radius: 10px; }
-.gen-class-491 { padding: 1px; margin: 1px; z-index: 491; border-radius: 11px; }
-.gen-class-492 { padding: 2px; margin: 2px; z-index: 492; border-radius: 12px; }
-.gen-class-493 { padding: 3px; margin: 3px; z-index: 493; border-radius: 13px; }
-.gen-class-494 { padding: 4px; margin: 4px; z-index: 494; border-radius: 14px; }
-.gen-class-495 { padding: 5px; margin: 0px; z-index: 495; border-radius: 15px; }
-.gen-class-496 { padding: 6px; margin: 1px; z-index: 496; border-radius: 16px; }
-.gen-class-497 { padding: 7px; margin: 2px; z-index: 497; border-radius: 17px; }
-.gen-class-498 { padding: 8px; margin: 3px; z-index: 498; border-radius: 18px; }
-.gen-class-499 { padding: 9px; margin: 4px; z-index: 499; border-radius: 19px; }
-.gen-class-500 { padding: 0px; margin: 0px; z-index: 500; border-radius: 0px; }
-.gen-class-501 { padding: 1px; margin: 1px; z-index: 501; border-radius: 1px; }
-.gen-class-502 { padding: 2px; margin: 2px; z-index: 502; border-radius: 2px; }
-.gen-class-503 { padding: 3px; margin: 3px; z-index: 503; border-radius: 3px; }
-.gen-class-504 { padding: 4px; margin: 4px; z-index: 504; border-radius: 4px; }
-.gen-class-505 { padding: 5px; margin: 0px; z-index: 505; border-radius: 5px; }
-.gen-class-506 { padding: 6px; margin: 1px; z-index: 506; border-radius: 6px; }
-.gen-class-507 { padding: 7px; margin: 2px; z-index: 507; border-radius: 7px; }
-.gen-class-508 { padding: 8px; margin: 3px; z-index: 508; border-radius: 8px; }
-.gen-class-509 { padding: 9px; margin: 4px; z-index: 509; border-radius: 9px; }
-.gen-class-510 { padding: 0px; margin: 0px; z-index: 510; border-radius: 10px; }
-.gen-class-511 { padding: 1px; margin: 1px; z-index: 511; border-radius: 11px; }
-.gen-class-512 { padding: 2px; margin: 2px; z-index: 512; border-radius: 12px; }
-.gen-class-513 { padding: 3px; margin: 3px; z-index: 513; border-radius: 13px; }
-.gen-class-514 { padding: 4px; margin: 4px; z-index: 514; border-radius: 14px; }
-.gen-class-515 { padding: 5px; margin: 0px; z-index: 515; border-radius: 15px; }
-.gen-class-516 { padding: 6px; margin: 1px; z-index: 516; border-radius: 16px; }
-.gen-class-517 { padding: 7px; margin: 2px; z-index: 517; border-radius: 17px; }
-.gen-class-518 { padding: 8px; margin: 3px; z-index: 518; border-radius: 18px; }
-.gen-class-519 { padding: 9px; margin: 4px; z-index: 519; border-radius: 19px; }
-.gen-class-520 { padding: 0px; margin: 0px; z-index: 520; border-radius: 0px; }
-.gen-class-521 { padding: 1px; margin: 1px; z-index: 521; border-radius: 1px; }
-.gen-class-522 { padding: 2px; margin: 2px; z-index: 522; border-radius: 2px; }
-.gen-class-523 { padding: 3px; margin: 3px; z-index: 523; border-radius: 3px; }
-.gen-class-524 { padding: 4px; margin: 4px; z-index: 524; border-radius: 4px; }
-.gen-class-525 { padding: 5px; margin: 0px; z-index: 525; border-radius: 5px; }
-.gen-class-526 { padding: 6px; margin: 1px; z-index: 526; border-radius: 6px; }
-.gen-class-527 { padding: 7px; margin: 2px; z-index: 527; border-radius: 7px; }
-.gen-class-528 { padding: 8px; margin: 3px; z-index: 528; border-radius: 8px; }
-.gen-class-529 { padding: 9px; margin: 4px; z-index: 529; border-radius: 9px; }
-.gen-class-530 { padding: 0px; margin: 0px; z-index: 530; border-radius: 10px; }
-.gen-class-531 { padding: 1px; margin: 1px; z-index: 531; border-radius: 11px; }
-.gen-class-532 { padding: 2px; margin: 2px; z-index: 532; border-radius: 12px; }
-.gen-class-533 { padding: 3px; margin: 3px; z-index: 533; border-radius: 13px; }
-.gen-class-534 { padding: 4px; margin: 4px; z-index: 534; border-radius: 14px; }
-.gen-class-535 { padding: 5px; margin: 0px; z-index: 535; border-radius: 15px; }
-.gen-class-536 { padding: 6px; margin: 1px; z-index: 536; border-radius: 16px; }
-.gen-class-537 { padding: 7px; margin: 2px; z-index: 537; border-radius: 17px; }
-.gen-class-538 { padding: 8px; margin: 3px; z-index: 538; border-radius: 18px; }
-.gen-class-539 { padding: 9px; margin: 4px; z-index: 539; border-radius: 19px; }
-.gen-class-540 { padding: 0px; margin: 0px; z-index: 540; border-radius: 0px; }
-.gen-class-541 { padding: 1px; margin: 1px; z-index: 541; border-radius: 1px; }
-.gen-class-542 { padding: 2px; margin: 2px; z-index: 542; border-radius: 2px; }
-.gen-class-543 { padding: 3px; margin: 3px; z-index: 543; border-radius: 3px; }
-.gen-class-544 { padding: 4px; margin: 4px; z-index: 544; border-radius: 4px; }
-.gen-class-545 { padding: 5px; margin: 0px; z-index: 545; border-radius: 5px; }
-.gen-class-546 { padding: 6px; margin: 1px; z-index: 546; border-radius: 6px; }
-.gen-class-547 { padding: 7px; margin: 2px; z-index: 547; border-radius: 7px; }
-.gen-class-548 { padding: 8px; margin: 3px; z-index: 548; border-radius: 8px; }
-.gen-class-549 { padding: 9px; margin: 4px; z-index: 549; border-radius: 9px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS // Real-Time Web Audio DSP & Ambilight Visualizer Engine</title>
+  <meta name="description" content="Client-side Web Audio DSP synthesis engine, 64-band FFT frequency analyzer, circular radial visualizer, and dynamic ambilight perimeter bloom studio.">
+  <meta name="keywords" content="Web Audio API, DSP synthesizer, FFT frequency visualizer, radial audio spectrum, ambilight bloom, cyber audio studio, equalizer, 64-band FFT">
+  <meta name="author" content="marko1olo">
+  <link rel="canonical" href="https://marko1olo.github.io/nexus-media-engine/">
 
-    <!-- ULTIMATE SEARCH ENGINE OPTIMIZATION (SEO) META TAGS -->
-    <meta name="description" content="Real-time DSP audio frequency analyzer and reactive ambient lighting web viewer with glassmorphism UI controls.">
-    <meta name="keywords" content="audio-visualizer, fft-analysis, ambilight, canvas-api, web-audio-api, neon-ui, dsp, music-visualizer">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="canonical" href="https://marko1olo.github.io/nexus-media-engine/">
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://marko1olo.github.io/nexus-media-engine/">
+  <meta property="og:title" content="NEXUS // Real-Time Web Audio DSP & Ambilight Visualizer Engine">
+  <meta property="og:description" content="Client-side Web Audio DSP synthesis engine, 64-band FFT frequency analyzer, circular radial visualizer, and dynamic ambilight perimeter bloom studio.">
+  <meta property="og:image" content="https://marko1olo.github.io/nexus-media-engine/favicon.svg">
+  <meta property="og:site_name" content="Nexus Media Engine">
 
-    <!-- OPEN GRAPH / FACEBOOK / LINKEDIN -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://marko1olo.github.io/nexus-media-engine/">
-    <meta property="og:title" content="Nexus Media Engine — Ambilight & Neon FFT Audio Visualizer Viewer">
-    <meta property="og:description" content="Real-time DSP audio frequency analyzer and reactive ambient lighting web viewer with glassmorphism UI controls.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/marko1olo/gigahrush/main/docs/nexus_engine_banner.jpg">
-    <meta property="og:site_name" content="Nexus Media Engine">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://marko1olo.github.io/nexus-media-engine/">
+  <meta name="twitter:title" content="NEXUS // Web Audio DSP & Ambilight Visualizer">
+  <meta name="twitter:description" content="64-band FFT frequency analyzer, circular radial spectrum visualizer, and client-side DSP audio synthesis.">
+  <meta name="twitter:image" content="https://marko1olo.github.io/nexus-media-engine/favicon.svg">
 
-    <!-- TWITTER CARDS -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://marko1olo.github.io/nexus-media-engine/">
-    <meta name="twitter:title" content="Nexus Media Engine — Ambilight & Neon FFT Audio Visualizer Viewer">
-    <meta name="twitter:description" content="Real-time DSP audio frequency analyzer and reactive ambient lighting web viewer with glassmorphism UI controls.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/marko1olo/gigahrush/main/docs/nexus_engine_banner.jpg">
-
-    <!-- SCHEMA.ORG STRUCTURED DATA FOR GOOGLE RICH SNIPPETS -->
-    <script type="application/ld+json">
-    {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Nexus Media Engine",
-  "headline": "Nexus Media Engine — Ambilight & Neon FFT Audio Visualizer Viewer",
-  "description": "Real-time DSP audio frequency analyzer and reactive ambient lighting web viewer with glassmorphism UI controls.",
-  "applicationCategory": "Audio & Media Software",
-  "operatingSystem": "Web, Windows, macOS, Linux, iOS, Android",
-  "url": "https://marko1olo.github.io/nexus-media-engine/",
-  "image": "https://raw.githubusercontent.com/marko1olo/gigahrush/main/docs/nexus_engine_banner.jpg",
-  "author": {
-    "@type": "Organization",
-    "name": "Antigravity Engineering"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Nexus Media Engine",
+    "operatingSystem": "All (Web Browser, Linux, macOS, Windows)",
+    "applicationCategory": "MultimediaApplication",
+    "description": "High-performance client-side Web Audio API DSP synthesis engine, 64-band FFT frequency analyzer, circular radial visualizer, and dynamic ambilight perimeter bloom.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "marko1olo"
+    }
   }
-}
-    </script>
+  </script>
 
+  <!-- Inline SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2307060e' stroke='%23a855f7' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='28' fill='none' stroke='%2306b6d4' stroke-width='3' stroke-dasharray='6 4'/%3E%3Cpolygon points='42,32 68,50 42,68' fill='%23ec4899'/%3E%3C/svg%3E">
 
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="manifest" href="site.webmanifest">
+  <style>
+    /* ==========================================================================
+       NEXUS MEDIA ENGINE CSS DESIGN SYSTEM (--nexus-*)
+       Aesthetic: Ambilight Violet, Laser Cyan & Obsidian Spectral Bloom
+       ========================================================================== */
+    :root {
+      /* Surface & Obsidian Backgrounds */
+      --nexus-bg: #07060e;
+      --nexus-bg-alt: #0d0a1a;
+      --nexus-surface: rgba(19, 15, 38, 0.88);
+      --nexus-surface-subtle: rgba(26, 20, 53, 0.75);
+      --nexus-surface-elevated: rgba(36, 28, 71, 0.92);
+      --nexus-border: rgba(168, 85, 247, 0.3);
+      --nexus-border-subtle: rgba(6, 182, 212, 0.2);
+      --nexus-border-focus: #06b6d4;
+
+      /* Ambilight Violet & Laser Cyan Core */
+      --nexus-violet: #a855f7;
+      --nexus-violet-bright: #c084fc;
+      --nexus-violet-glow: rgba(168, 85, 247, 0.45);
+      --nexus-cyan: #06b6d4;
+      --nexus-cyan-bright: #22d3ee;
+      --nexus-cyan-glow: rgba(6, 182, 212, 0.45);
+      --nexus-magenta: #ec4899;
+      --nexus-magenta-bright: #f472b6;
+      --nexus-pink-glow: rgba(236, 72, 153, 0.4);
+      --nexus-blue: #3b82f6;
+
+      /* Typography & Text */
+      --nexus-text: #f3f4f6;
+      --nexus-text-muted: #94a3b8;
+      --nexus-text-dim: #64748b;
+      --nexus-font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+      --nexus-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+      /* Geometry */
+      --nexus-radius-sm: 4px;
+      --nexus-radius-md: 8px;
+      --nexus-radius-lg: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--nexus-bg);
+      color: var(--nexus-text);
+      font-family: var(--nexus-font-mono);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Dynamic Backdrop Glow */
+    .nexus-ambilight-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle at 50% 30%, rgba(168, 85, 247, 0.08) 0%, rgba(6, 182, 212, 0.04) 45%, transparent 70%);
+      transition: background 0.15s ease-out;
+    }
+
+    /* Main Container */
+    .nexus-app-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+    }
+
+    /* Header & HUD */
+    .nexus-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: var(--nexus-surface);
+      border: 1px solid var(--nexus-border);
+      border-radius: var(--nexus-radius-md);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      margin-bottom: 24px;
+    }
+
+    .nexus-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nexus-brand-orb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--nexus-cyan-bright) 20%, var(--nexus-violet) 70%);
+      box-shadow: 0 0 14px var(--nexus-cyan);
+      animation: orbPulse 2.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes orbPulse {
+      0% { transform: scale(0.9); box-shadow: 0 0 8px var(--nexus-cyan); }
+      100% { transform: scale(1.15); box-shadow: 0 0 20px var(--nexus-magenta-bright); }
+    }
+
+    .nexus-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--nexus-text);
+      text-transform: uppercase;
+    }
+    .nexus-title span {
+      color: var(--nexus-cyan-bright);
+    }
+
+    .nexus-telemetry-hud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hud-pill {
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: var(--nexus-radius-sm);
+      background: var(--nexus-surface-subtle);
+      border: 1px solid var(--nexus-border-subtle);
+      color: var(--nexus-text-muted);
+      letter-spacing: 0.5px;
+    }
+    .hud-pill.active {
+      color: var(--nexus-cyan-bright);
+      border-color: var(--nexus-cyan);
+      background: rgba(6, 182, 212, 0.12);
+      box-shadow: 0 0 8px rgba(6, 182, 212, 0.25);
+    }
+
+    /* Hero Section */
+    .nexus-hero {
+      text-align: center;
+      margin-bottom: 28px;
+      padding: 24px 16px;
+      background: linear-gradient(180deg, rgba(168, 85, 247, 0.08) 0%, rgba(6, 182, 212, 0.02) 100%);
+      border: 1px solid var(--nexus-border-subtle);
+      border-radius: var(--nexus-radius-lg);
+    }
+
+    .nexus-hero h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 16px rgba(168, 85, 247, 0.5);
+    }
+
+    .nexus-hero p {
+      max-width: 840px;
+      margin: 0 auto 16px;
+      color: var(--nexus-text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .nexus-hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .nexus-hero-pill {
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid var(--nexus-border);
+      border-radius: 20px;
+      color: var(--nexus-violet-bright);
+    }
+
+    /* Studio Grid */
+    .nexus-studio-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .nexus-panel {
+      background: var(--nexus-surface);
+      border: 1px solid var(--nexus-border);
+      border-radius: var(--nexus-radius-lg);
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--nexus-border-subtle);
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--nexus-violet-bright);
+      letter-spacing: 1px;
+    }
+
+    /* Visualizer Stage */
+    .stage-modes {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-mode {
+      background: var(--nexus-surface-subtle);
+      border: 1px solid var(--nexus-border-subtle);
+      color: var(--nexus-text-muted);
+      padding: 4px 10px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      border-radius: var(--nexus-radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-mode:hover {
+      border-color: var(--nexus-cyan);
+      color: var(--nexus-cyan-bright);
+    }
+    .btn-mode.active {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: var(--nexus-cyan);
+      color: var(--nexus-cyan-bright);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+    }
+
+    /* Visualizer Viewport Wrapper with Dynamic Ambilight */
+    .visualizer-viewport-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 380px;
+      height: 420px;
+      background: #030207;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: var(--nexus-radius-md);
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
+      transition: box-shadow 0.1s ease-out, border-color 0.1s ease-out;
+      margin-bottom: 16px;
+    }
+
+    #spectrumCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .visualizer-overlay-stats {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      pointer-events: none;
+    }
+
+    .stat-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      background: rgba(7, 6, 14, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--nexus-radius-sm);
+      color: var(--nexus-cyan-bright);
+    }
+
+    /* Band Meters */
+    .band-meters-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      padding: 12px;
+      background: var(--nexus-surface-subtle);
+      border: 1px solid var(--nexus-border-subtle);
+      border-radius: var(--nexus-radius-md);
+    }
+
+    .band-meter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meter-label {
+      font-size: 0.68rem;
+      color: var(--nexus-text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .meter-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--nexus-violet) 0%, var(--nexus-cyan-bright) 80%, var(--nexus-magenta-bright) 100%);
+      transition: width 0.08s ease-out;
+    }
+
+    .meter-value {
+      font-size: 0.7rem;
+      color: var(--nexus-text);
+      font-weight: 600;
+    }
+
+    /* Synth Controls Panel */
+    .generator-mode-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .synth-mode-btn {
+      background: var(--nexus-surface-subtle);
+      border: 1px solid var(--nexus-border-subtle);
+      color: var(--nexus-text);
+      padding: 10px 12px;
+      border-radius: var(--nexus-radius-sm);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .synth-mode-btn span {
+      font-size: 0.65rem;
+      color: var(--nexus-text-dim);
+      font-weight: 400;
+    }
+    .synth-mode-btn:hover {
+      border-color: var(--nexus-violet-bright);
+      background: rgba(168, 85, 247, 0.1);
+    }
+    .synth-mode-btn.active {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: var(--nexus-violet-bright);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.35);
+    }
+    .synth-mode-btn.active span {
+      color: var(--nexus-violet-bright);
+    }
+
+    .audio-transport-controls {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .nexus-btn-primary {
+      background: linear-gradient(135deg, var(--nexus-violet) 0%, #7c3aed 100%);
+      color: #ffffff;
+      border: 1px solid var(--nexus-violet-bright);
+      border-radius: var(--nexus-radius-md);
+      padding: 12px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+      transition: all 0.2s ease;
+    }
+    .nexus-btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 24px rgba(168, 85, 247, 0.65);
+    }
+    .nexus-btn-primary.playing {
+      background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+      border-color: var(--nexus-magenta-bright);
+      box-shadow: 0 0 16px rgba(236, 72, 153, 0.5);
+    }
+
+    .nexus-btn-secondary {
+      background: var(--nexus-surface-subtle);
+      color: var(--nexus-text-muted);
+      border: 1px solid var(--nexus-border-subtle);
+      border-radius: var(--nexus-radius-md);
+      padding: 12px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nexus-btn-secondary:hover {
+      border-color: var(--nexus-cyan);
+      color: var(--nexus-cyan-bright);
+    }
+    .nexus-btn-secondary.active {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: #ef4444;
+      color: #f87171;
+    }
+
+    /* Sliders Deck */
+    .sliders-deck {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+    }
+    .slider-title {
+      color: var(--nexus-text-muted);
+    }
+    .slider-val {
+      color: var(--nexus-cyan-bright);
+      font-weight: 600;
+    }
+
+    .nexus-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--nexus-surface-subtle);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      outline: none;
+    }
+    .nexus-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--nexus-cyan-bright);
+      box-shadow: 0 0 10px var(--nexus-cyan);
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      transition: transform 0.1s;
+    }
+    .nexus-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* Color Matrix Palette Selector */
+    .palette-switcher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--nexus-border-subtle);
+    }
+    .palette-switcher span {
+      font-size: 0.72rem;
+      color: var(--nexus-text-muted);
+    }
+    .color-pill {
+      padding: 4px 10px;
+      font-size: 0.7rem;
+      border-radius: 12px;
+      border: 1px solid var(--nexus-border-subtle);
+      background: var(--nexus-surface-subtle);
+      color: var(--nexus-text-muted);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .color-pill.active {
+      border-color: var(--nexus-violet-bright);
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+    }
+
+    /* Technical Specs Grid */
+    .nexus-specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .spec-card {
+      background: var(--nexus-surface);
+      border: 1px solid var(--nexus-border-subtle);
+      border-radius: var(--nexus-radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .spec-card h4 {
+      font-size: 0.85rem;
+      color: var(--nexus-cyan-bright);
+      letter-spacing: 0.5px;
+    }
+
+    .spec-card p {
+      font-size: 0.8rem;
+      color: var(--nexus-text-muted);
+      line-height: 1.5;
+    }
+
+    .spec-badge-tag {
+      align-self: flex-start;
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--nexus-cyan-bright);
+      border-radius: 3px;
+    }
+
+    /* CLI Integration Box */
+    .nexus-cli-box {
+      background: #040308;
+      border: 1px solid var(--nexus-border);
+      border-radius: var(--nexus-radius-md);
+      padding: 16px;
+      margin-bottom: 32px;
+    }
+
+    .cli-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .cli-title {
+      font-size: 0.78rem;
+      color: var(--nexus-violet-bright);
+      letter-spacing: 1px;
+    }
+
+    .cli-copy-btn {
+      background: var(--nexus-surface-subtle);
+      border: 1px solid var(--nexus-border-subtle);
+      color: var(--nexus-text-muted);
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      border-radius: var(--nexus-radius-sm);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .cli-copy-btn:hover {
+      border-color: var(--nexus-cyan);
+      color: var(--nexus-cyan-bright);
+    }
+
+    .cli-code {
+      font-family: var(--nexus-font-mono);
+      font-size: 0.8rem;
+      color: var(--nexus-cyan-bright);
+      background: #020104;
+      padding: 12px;
+      border-radius: var(--nexus-radius-sm);
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* Footer */
+    .nexus-footer {
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid var(--nexus-border-subtle);
+      color: var(--nexus-text-dim);
+      font-size: 0.75rem;
+    }
+    .nexus-footer a {
+      color: var(--nexus-violet-bright);
+      text-decoration: none;
+    }
+    .nexus-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Breakdown */
+    @media (max-width: 960px) {
+      .nexus-studio-grid {
+        grid-template-columns: 1fr;
+      }
+      .visualizer-viewport-wrap {
+        height: 320px;
+      }
+      .generator-mode-selector {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nexus-app-container {
+        padding: 14px 10px 32px;
+      }
+      .nexus-title {
+        font-size: 0.95rem;
+      }
+      .nexus-hero h2 {
+        font-size: 1.2rem;
+      }
+      .band-meters-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .audio-transport-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <canvas id="appCanvas"></canvas>
-    <header class="glass">
-        <div class="logo" style="font-size: 1.5rem; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 10px;">
-            <div style="width:20px; height:20px; background:var(--accent); animation: pulse 2s infinite;"></div>
-            Nexus Media Engine
-        </div>
-        <nav>
-            <a href="#features">Features</a>
-            <a href="#tech">Tech Stack</a>
-        
-<div id="lang-switcher" style="display: inline-flex; gap: 6px; background: rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); font-size: 0.8rem; margin-left: 1rem; align-items: center;">
-    <span style="color: #aaa; font-weight: bold; margin-right: 2px;">🌐</span>
-    <button onclick="setLang('en')" style="background: transparent; border: none; color: #00ffcc; font-weight: bold; cursor: pointer; padding: 2px 4px;">EN</button> |
-    <button onclick="setLang('ru')" style="background: transparent; border: none; color: #fff; cursor: pointer; padding: 2px 4px;">RU</button> |
-    <button onclick="setLang('zh')" style="background: transparent; border: none; color: #fff; cursor: pointer; padding: 2px 4px;">ZH</button> |
-    <button onclick="setLang('de')" style="background: transparent; border: none; color: #fff; cursor: pointer; padding: 2px 4px;">DE</button>
-</div>
-<script>
-function setLang(lang) {
-    const notice = document.getElementById('i18n-notice');
-    if (notice) {
-        const msgs = {
-            en: '🌐 Switched language to English',
-            ru: '🌐 Язык переключён на Русский',
-            zh: '🌐 语言已切换为中文',
-            de: '🌐 Sprache auf Deutsch umgestellt'
-        };
-        notice.innerText = msgs[lang] || msgs.en;
-        notice.style.display = 'block';
-        setTimeout(() => notice.style.display = 'none', 3000);
-    }
-}
-</script>
-</nav>
+  <!-- Reactive Ambilight Glow Overlay -->
+  <div class="nexus-ambilight-backdrop" id="ambilightBackdrop"></div>
+
+  <div class="nexus-app-container" id="nexusApp">
+    <!-- Top Header -->
+    <header class="nexus-header">
+      <div class="nexus-brand">
+        <div class="nexus-brand-orb" id="brandOrb"></div>
+        <h1 class="nexus-title">NEXUS // <span>MEDIA ENGINE</span></h1>
+      </div>
+      <div class="nexus-telemetry-hud">
+        <div class="hud-pill active" id="hudDspMode">DSP: 64-BAND FFT</div>
+        <div class="hud-pill" id="hudSampleRate">RATE: 44.1 kHz</div>
+        <div class="hud-pill" id="hudBufferSize">BUFFER: 128 SPL</div>
+        <div class="hud-pill" id="hudStatus">STATUS: STANDBY</div>
+      </div>
     </header>
-    <main>
-        <section class="hero">
-            <h1>Nexus Media Engine</h1>
-            <p style="font-size: 1.2rem; max-width: 600px; line-height: 1.6;">NEXUS MEDIA ENGINE AMBILIGHT & FFT AUDIO VISUALIZER.</p>
-            <div class="hero-graphic" style="margin-top: 3rem; width: 150px; height: 150px; background: rgba(255,255,255,0.05); border: 2px solid var(--accent); border-radius: 30%; animation: rotate3d 12s infinite linear, glow 3s infinite ease-in-out;"></div>
-        </section>
-        
-        <section id="features" class="grid">
-            <div class="card">
-                <h3 style="color: var(--accent); margin-top: 0;">FFT Visualizer</h3>
-                <p>Enterprise-grade feature crafted with precision and performance in mind.</p>
-            </div><div class="card">
-                <h3 style="color: var(--accent); margin-top: 0;">Ambilight Engine</h3>
-                <p>Enterprise-grade feature crafted with precision and performance in mind.</p>
-            </div><div class="card">
-                <h3 style="color: var(--accent); margin-top: 0;">WebAudio API</h3>
-                <p>Enterprise-grade feature crafted with precision and performance in mind.</p>
-            </div><div class="card">
-                <h3 style="color: var(--accent); margin-top: 0;">Custom Presets</h3>
-                <p>Enterprise-grade feature crafted with precision and performance in mind.</p>
-            </div><div class="card">
-                <h3 style="color: var(--accent); margin-top: 0;">GPU Acceleration</h3>
-                <p>Enterprise-grade feature crafted with precision and performance in mind.</p>
-            </div><div class="card">
-                <h3 style="color: var(--accent); margin-top: 0;">Spotify Integration</h3>
-                <p>Enterprise-grade feature crafted with precision and performance in mind.</p>
+
+    <!-- Hero Introduction -->
+    <section class="nexus-hero">
+      <h2>REAL-TIME DSP AUDIO FREQUENCY ANALYZER & REACTIVE AMBILIGHT STUDIO</h2>
+      <p>Zero-dependency client-side Web Audio API synthesizer, 64-bin FFT spectrum analyzer, circular radial visualizer, and dynamic peripheral ambilight bloom generator.</p>
+      <div class="nexus-hero-pills">
+        <div class="nexus-hero-pill">⚡ Pure Web Audio API</div>
+        <div class="nexus-hero-pill">📊 64-Band FFT Decomp</div>
+        <div class="nexus-hero-pill">🔮 Radial Audio Spectrum</div>
+        <div class="nexus-hero-pill">🌈 Reactive Ambilight Bloom</div>
+        <div class="nexus-hero-pill">🔒 100% Offline ES6</div>
+      </div>
+    </section>
+
+    <!-- Studio Grid -->
+    <main class="nexus-studio-grid">
+      <!-- Left / Visualizer Stage -->
+      <section class="nexus-panel">
+        <div class="panel-header">
+          <div class="panel-title">[01] REACTIVE SPECTRUM CANVAS</div>
+          <div class="stage-modes">
+            <button class="btn-mode active" id="btnModeRadial">RADIAL</button>
+            <button class="btn-mode" id="btnModeBars">64-BARS</button>
+            <button class="btn-mode" id="btnModeWave">WAVEFORM</button>
+          </div>
+        </div>
+
+        <div class="visualizer-viewport-wrap" id="visualizerContainer">
+          <canvas id="spectrumCanvas"></canvas>
+          <div class="visualizer-overlay-stats">
+            <div class="stat-badge" id="statRms">RMS: -inf dB</div>
+            <div class="stat-badge" id="statPeakHz">PEAK: 0 Hz</div>
+            <div class="stat-badge" id="statOctave">OCTAVE: SUB</div>
+          </div>
+        </div>
+
+        <!-- 5 Frequency Band Meters -->
+        <div class="band-meters-row">
+          <div class="band-meter">
+            <span class="meter-label">SUB (0-60Hz)</span>
+            <div class="meter-track"><div class="meter-fill" id="meterSub"></div></div>
+            <span class="meter-value" id="valSub">0%</span>
+          </div>
+          <div class="band-meter">
+            <span class="meter-label">BASS (60-250Hz)</span>
+            <div class="meter-track"><div class="meter-fill" id="meterBass"></div></div>
+            <span class="meter-value" id="valBass">0%</span>
+          </div>
+          <div class="band-meter">
+            <span class="meter-label">MID (250-2kHz)</span>
+            <div class="meter-track"><div class="meter-fill" id="meterMid"></div></div>
+            <span class="meter-value" id="valMid">0%</span>
+          </div>
+          <div class="band-meter">
+            <span class="meter-label">PRES (2k-6kHz)</span>
+            <div class="meter-track"><div class="meter-fill" id="meterPres"></div></div>
+            <span class="meter-value" id="valPres">0%</span>
+          </div>
+          <div class="band-meter">
+            <span class="meter-label">BRILL (6k-20kHz)</span>
+            <div class="meter-track"><div class="meter-fill" id="meterBrill"></div></div>
+            <span class="meter-value" id="valBrill">0%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right / DSP & Synth Controls -->
+      <section class="nexus-panel">
+        <div class="panel-header">
+          <div class="panel-title">[02] SYNTHETIC OSCILLATOR & DSP SOURCE</div>
+        </div>
+
+        <!-- Synth Sound Preset Modes -->
+        <div class="generator-mode-selector">
+          <button class="synth-mode-btn active" data-mode="synthwave">
+            SYNTH WAVE
+            <span>Sawtooth Arp + Filter Sweep</span>
+          </button>
+          <button class="synth-mode-btn" data-mode="bassdrop">
+            BASS SWEEP
+            <span>Sub-bass 35-120Hz Glide</span>
+          </button>
+          <button class="synth-mode-btn" data-mode="pinknoise">
+            PINK NOISE
+            <span>1/f Atmospheric Static</span>
+          </button>
+          <button class="synth-mode-btn" data-mode="sinematrix">
+            SINE MATRIX
+            <span>FM Harmonic Bell Matrix</span>
+          </button>
+        </div>
+
+        <!-- Transport Buttons -->
+        <div class="audio-transport-controls">
+          <button class="nexus-btn-primary" id="btnAudioToggle">▶ START AUDIO ENGINE</button>
+          <button class="nexus-btn-secondary" id="btnMuteToggle">MUTE AUDIO</button>
+        </div>
+
+        <!-- Sliders Deck -->
+        <div class="sliders-deck">
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-title">MASTER VOLUME</span>
+              <span class="slider-val" id="valVolume">75%</span>
             </div>
-        </section>
-        
-        <section id="tech" class="glass" style="margin: 4rem 5%; text-align: center;">
-            <h2 style="color: var(--accent);">Technology Stack</h2>
-            <p style="font-size: 1.2rem; letter-spacing: 2px;">HTML5 • CSS3 • CANVAS API • JAVASCRIPT • GITHUB ACTIONS</p>
-        </section>
+            <input type="range" class="nexus-slider" id="sliderVolume" min="0" max="100" value="75">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-title">FFT SMOOTHING (DECAY)</span>
+              <span class="slider-val" id="valDecay">0.82</span>
+            </div>
+            <input type="range" class="nexus-slider" id="sliderDecay" min="10" max="95" value="82">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-title">AMBILIGHT BLOOM INTENSITY</span>
+              <span class="slider-val" id="valBloom">100%</span>
+            </div>
+            <input type="range" class="nexus-slider" id="sliderBloom" min="0" max="200" value="100">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-title">BASE PITCH / MODULATION SPEED</span>
+              <span class="slider-val" id="valSpeed">220 Hz</span>
+            </div>
+            <input type="range" class="nexus-slider" id="sliderSpeed" min="50" max="600" value="220">
+          </div>
+        </div>
+
+        <!-- Palette Theme Switcher -->
+        <div class="palette-switcher">
+          <span>COLOR PALETTE:</span>
+          <button class="color-pill active" data-palette="violet-cyan">VIOLET-CYAN</button>
+          <button class="color-pill" data-palette="cyber-magenta">MAGENTA-GOLD</button>
+          <button class="color-pill" data-palette="matrix-green">MATRIX-GREEN</button>
+        </div>
+      </section>
     </main>
-    
-<section id="faq" style="padding: 3rem 1.5rem; max-width: 1000px; margin: 0 auto;">
-  <h2 style="font-size: 2rem; margin-bottom: 1.5rem; text-align: center; color: var(--accent, #00ffcc);">❓ Frequently Asked Questions (FAQ)</h2>
-  <div style="display: flex; flex-direction: column; gap: 1rem;">
-    <details style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1rem; cursor: pointer; transition: all 0.3s;">
-      <summary style="font-weight: bold; font-size: 1.1rem; color: #fff;">What audio sources are supported?</summary>
-      <p style="margin-top: 0.75rem; color: rgba(255,255,255,0.8); line-height: 1.6;">Nexus Media Engine supports microphone input, live audio stream capture, and local MP3/FLAC audio files.</p>
-    </details>
-  </div>
-</section>
 
-<footer>
-        <p>&copy; 2026 Nexus Media Engine. All rights reserved.</p>
+    <!-- Technical Specs Row -->
+    <section class="nexus-specs-grid">
+      <article class="spec-card">
+        <span class="spec-badge-tag">FOURIER TRANSFORM</span>
+        <h4>64-Band Fast Fourier Transform</h4>
+        <p>Utilizes an AnalyserNode with <code>fftSize = 128</code> to extract 64 discrete frequency bins from 0 Hz to 22.05 kHz. Peak detection and RMS energy calculation run continuously at 60 FPS.</p>
+      </article>
+
+      <article class="spec-card">
+        <span class="spec-badge-tag">DSP ARCHITECTURE</span>
+        <h4>4-Mode Synthetic Sound Generator</h4>
+        <p>Integrates multi-oscillator sawtooth arpeggiation, sub-bass resonant exponential glides, Paul Kellet's 1/f pink noise algorithm, and dual-operator FM frequency modulation.</p>
+      </article>
+
+      <article class="spec-card">
+        <span class="spec-badge-tag">PERIMETER RAYCASTING</span>
+        <h4>Reactive Ambilight Perimeter Bloom</h4>
+        <p>Dynamic DOM backdrop that measures low-frequency bass energy ($E_{\text{sub}}$) to modulate real-time multi-layered CSS box-shadows and radial backlight blooms with zero layout shift.</p>
+      </article>
+    </section>
+
+    <!-- CLI Integration Box -->
+    <section class="nexus-cli-box">
+      <div class="cli-header">
+        <span class="cli-title">WEBAUDIO INTEGRATION SNIPPET</span>
+        <button class="cli-copy-btn" id="btnCopyCli">COPY_CODE</button>
+      </div>
+      <pre class="cli-code" id="cliCodeBlock">const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const analyser = ctx.createAnalyser();
+analyser.fftSize = 128; // 64 frequency bins
+const data = new Uint8Array(analyser.frequencyBinCount);
+// Feed synthesis pipeline into analyser & destination</pre>
+    </section>
+
+    <!-- Footer -->
+    <footer class="nexus-footer">
+      <p>NEXUS MEDIA ENGINE // Real-Time Web Audio DSP Studio // MIT License // <a href="https://github.com/marko1olo/nexus-media-engine" target="_blank" rel="noopener">GitHub Repository</a></p>
     </footer>
-    <script>
-        const canvas = document.getElementById('appCanvas');
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-        
-            const ctx = canvas.getContext('2d');
-            function anim(time) {
-                ctx.fillStyle = 'rgba(5, 5, 5, 0.2)';
-                ctx.fillRect(0,0,canvas.width,canvas.height);
-                let bars = 100;
-                let w = canvas.width / bars;
-                for(let i=0; i<bars; i++) {
-                    let h = Math.abs(Math.sin(time*0.002 + i*0.1)) * (canvas.height/2);
-                    let grad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - h);
-                    grad.addColorStop(0, '#bf00ff');
-                    grad.addColorStop(1, '#00ffff');
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(i*w, canvas.height - h, w-2, h);
-                }
-                requestAnimationFrame(anim);
-            }
-            requestAnimationFrame(anim);
-        
-    </script>
-    <!-- AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -->
+  </div>
 
-<div id="i18n-notice" style="display:none; position:fixed; bottom:20px; right:20px; background:#00ffcc; color:#01070e; font-weight:bold; padding:12px 20px; border-radius:8px; z-index:9999; box-shadow:0 5px 20px rgba(0,255,204,0.4);">🌐 Switched language</div>
+  <script>
+    (function () {
+      "use strict";
+
+      // Application State
+      let audioCtx = null;
+      let analyserNode = null;
+      let masterGain = null;
+      let filterNode = null;
+      let activeOscillators = [];
+      let isPlaying = false;
+      let isMuted = false;
+      let currentSynthMode = "synthwave";
+      let visualizerMode = "radial"; // "radial" | "bars" | "wave"
+      let currentPalette = "violet-cyan";
+      let rotationAngle = 0;
+      let peakCaps = new Array(64).fill(0);
+
+      // DOM Elements
+      const canvas = document.getElementById("spectrumCanvas");
+      const ctx = canvas.getContext("2d");
+      const visualizerContainer = document.getElementById("visualizerContainer");
+      const ambilightBackdrop = document.getElementById("ambilightBackdrop");
+      const btnAudioToggle = document.getElementById("btnAudioToggle");
+      const btnMuteToggle = document.getElementById("btnMuteToggle");
+      const hudStatus = document.getElementById("hudStatus");
+      const hudSampleRate = document.getElementById("hudSampleRate");
+      const brandOrb = document.getElementById("brandOrb");
+
+      const sliderVolume = document.getElementById("sliderVolume");
+      const valVolume = document.getElementById("valVolume");
+      const sliderDecay = document.getElementById("sliderDecay");
+      const valDecay = document.getElementById("valDecay");
+      const sliderBloom = document.getElementById("sliderBloom");
+      const valBloom = document.getElementById("valBloom");
+      const sliderSpeed = document.getElementById("sliderSpeed");
+      const valSpeed = document.getElementById("valSpeed");
+
+      const statRms = document.getElementById("statRms");
+      const statPeakHz = document.getElementById("statPeakHz");
+      const statOctave = document.getElementById("statOctave");
+
+      const meterSub = document.getElementById("meterSub");
+      const valSub = document.getElementById("valSub");
+      const meterBass = document.getElementById("meterBass");
+      const valBass = document.getElementById("valBass");
+      const meterMid = document.getElementById("meterMid");
+      const valMid = document.getElementById("valMid");
+      const meterPres = document.getElementById("meterPres");
+      const valPres = document.getElementById("valPres");
+      const meterBrill = document.getElementById("meterBrill");
+      const valBrill = document.getElementById("valBrill");
+
+      // Arpeggio note frequencies
+      const ARP_NOTES = [110, 130.81, 164.81, 196, 220, 261.63, 329.63, 392];
+      let arpIndex = 0;
+      let arpIntervalId = null;
+
+      // Color Themes
+      const PALETTES = {
+        "violet-cyan": {
+          primary: "#a855f7",
+          secondary: "#06b6d4",
+          highlight: "#ec4899",
+          glow: "rgba(168, 85, 247, 0.4)",
+          bgGrad: "rgba(168, 85, 247, 0.12)"
+        },
+        "cyber-magenta": {
+          primary: "#ec4899",
+          secondary: "#ffb300",
+          highlight: "#ffffff",
+          glow: "rgba(236, 72, 153, 0.4)",
+          bgGrad: "rgba(236, 72, 153, 0.12)"
+        },
+        "matrix-green": {
+          primary: "#10b981",
+          secondary: "#06b6d4",
+          highlight: "#34d399",
+          glow: "rgba(16, 185, 129, 0.4)",
+          bgGrad: "rgba(16, 185, 129, 0.12)"
+        }
+      };
+
+      /**
+       * Audio Context Initialization
+       */
+      function initAudio() {
+        if (audioCtx) return;
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+
+        analyserNode = audioCtx.createAnalyser();
+        analyserNode.fftSize = 128; // 64 frequency bins
+        analyserNode.smoothingTimeConstant = parseFloat(sliderDecay.value) / 100;
+
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = parseFloat(sliderVolume.value) / 100;
+
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = "lowpass";
+        filterNode.frequency.value = 2400;
+
+        masterGain.connect(analyserNode);
+        analyserNode.connect(audioCtx.destination);
+
+        hudSampleRate.textContent = "RATE: " + (audioCtx.sampleRate / 1000).toFixed(1) + " kHz";
+      }
+
+      /**
+       * Stop current sound nodes
+       */
+      function stopCurrentSound() {
+        if (arpIntervalId) {
+          clearInterval(arpIntervalId);
+          arpIntervalId = null;
+        }
+        activeOscillators.forEach(osc => {
+          try {
+            osc.stop();
+            osc.disconnect();
+          } catch (e) {}
+        });
+        activeOscillators = [];
+      }
+
+      /**
+       * Start sound generation based on selected mode
+       */
+      function startSynthMode(mode) {
+        if (!audioCtx) initAudio();
+        stopCurrentSound();
+
+        const basePitch = parseFloat(sliderSpeed.value);
+
+        if (mode === "synthwave") {
+          // Sawtooth Arpeggio Mode
+          const osc = audioCtx.createOscillator();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(basePitch, audioCtx.currentTime);
+
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = "lowpass";
+          filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+          filter.Q.setValueAtTime(4, audioCtx.currentTime);
+
+          osc.connect(filter);
+          filter.connect(masterGain);
+          osc.start();
+          activeOscillators.push(osc);
+
+          arpIndex = 0;
+          arpIntervalId = setInterval(() => {
+            if (!audioCtx || !isPlaying) return;
+            const note = ARP_NOTES[arpIndex % ARP_NOTES.length] * (basePitch / 220);
+            osc.frequency.setTargetAtTime(note, audioCtx.currentTime, 0.03);
+
+            // Filter envelope modulation
+            const filterCutoff = 400 + 2800 * Math.abs(Math.sin(arpIndex * 0.35));
+            filter.frequency.setTargetAtTime(filterCutoff, audioCtx.currentTime, 0.05);
+
+            arpIndex++;
+          }, 140);
+        } else if (mode === "bassdrop") {
+          // Sub-bass glide
+          const osc = audioCtx.createOscillator();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+
+          const drive = audioCtx.createGain();
+          drive.gain.value = 1.2;
+
+          osc.connect(drive);
+          drive.connect(masterGain);
+          osc.start();
+          activeOscillators.push(osc);
+
+          let sweepPhase = 0;
+          arpIntervalId = setInterval(() => {
+            if (!audioCtx || !isPlaying) return;
+            sweepPhase += 0.1;
+            const freq = 40 + 75 * (0.5 + 0.5 * Math.sin(sweepPhase));
+            osc.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.08);
+          }, 50);
+        } else if (mode === "pinknoise") {
+          // Paul Kellet's 1/f Pink Noise Buffer
+          const bufferSize = audioCtx.sampleRate * 2;
+          const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+            b6 = white * 0.115926;
+          }
+
+          const noiseSrc = audioCtx.createBufferSource();
+          noiseSrc.buffer = noiseBuffer;
+          noiseSrc.loop = true;
+
+          const noiseFilter = audioCtx.createBiquadFilter();
+          noiseFilter.type = "bandpass";
+          noiseFilter.frequency.setValueAtTime(basePitch * 3, audioCtx.currentTime);
+          noiseFilter.Q.setValueAtTime(3.0, audioCtx.currentTime);
+
+          noiseSrc.connect(noiseFilter);
+          noiseFilter.connect(masterGain);
+          noiseSrc.start();
+          activeOscillators.push(noiseSrc);
+
+          let sweep = 0;
+          arpIntervalId = setInterval(() => {
+            if (!audioCtx || !isPlaying) return;
+            sweep += 0.05;
+            const f = 200 + 3500 * (0.5 + 0.5 * Math.sin(sweep));
+            noiseFilter.frequency.setTargetAtTime(f, audioCtx.currentTime, 0.1);
+          }, 60);
+        } else if (mode === "sinematrix") {
+          // 2-Operator FM Harmonic Bell
+          const carrier = audioCtx.createOscillator();
+          carrier.type = "sine";
+          carrier.frequency.setValueAtTime(basePitch, audioCtx.currentTime);
+
+          const modulator = audioCtx.createOscillator();
+          modulator.type = "sine";
+          modulator.frequency.setValueAtTime(basePitch * 1.5, audioCtx.currentTime);
+
+          const modGain = audioCtx.createGain();
+          modGain.gain.setValueAtTime(basePitch * 2.5, audioCtx.currentTime);
+
+          modulator.connect(modGain);
+          modGain.connect(carrier.frequency);
+
+          carrier.connect(masterGain);
+          carrier.start();
+          modulator.start();
+          activeOscillators.push(carrier, modulator);
+
+          let fmPhase = 0;
+          arpIntervalId = setInterval(() => {
+            if (!audioCtx || !isPlaying) return;
+            fmPhase += 0.08;
+            const modMult = 1 + 3 * (0.5 + 0.5 * Math.sin(fmPhase));
+            modGain.gain.setTargetAtTime(basePitch * modMult, audioCtx.currentTime, 0.08);
+          }, 80);
+        }
+      }
+
+      /**
+       * Toggle Audio State
+       */
+      function toggleAudio() {
+        if (!audioCtx) initAudio();
+
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+
+        isPlaying = !isPlaying;
+
+        if (isPlaying) {
+          btnAudioToggle.textContent = "■ PAUSE AUDIO ENGINE";
+          btnAudioToggle.classList.add("playing");
+          hudStatus.textContent = "STATUS: ACTIVE";
+          hudStatus.classList.add("active");
+          startSynthMode(currentSynthMode);
+        } else {
+          btnAudioToggle.textContent = "▶ START AUDIO ENGINE";
+          btnAudioToggle.classList.remove("playing");
+          hudStatus.textContent = "STATUS: STANDBY";
+          hudStatus.classList.remove("active");
+          stopCurrentSound();
+        }
+      }
+
+      // Event Listeners for Buttons
+      btnAudioToggle.addEventListener("click", toggleAudio);
+
+      btnMuteToggle.addEventListener("click", () => {
+        isMuted = !isMuted;
+        if (masterGain) {
+          masterGain.gain.value = isMuted ? 0 : parseFloat(sliderVolume.value) / 100;
+        }
+        btnMuteToggle.classList.toggle("active", isMuted);
+        btnMuteToggle.textContent = isMuted ? "UNMUTE AUDIO" : "MUTE AUDIO";
+      });
+
+      // Synth Mode Selector
+      document.querySelectorAll(".synth-mode-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".synth-mode-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentSynthMode = btn.dataset.mode;
+          if (isPlaying) {
+            startSynthMode(currentSynthMode);
+          }
+        });
+      });
+
+      // Visualizer Mode Selector
+      document.getElementById("btnModeRadial").addEventListener("click", (e) => {
+        setVisualizerMode("radial", e.target);
+      });
+      document.getElementById("btnModeBars").addEventListener("click", (e) => {
+        setVisualizerMode("bars", e.target);
+      });
+      document.getElementById("btnModeWave").addEventListener("click", (e) => {
+        setVisualizerMode("wave", e.target);
+      });
+
+      function setVisualizerMode(mode, targetBtn) {
+        visualizerMode = mode;
+        document.querySelectorAll(".stage-modes .btn-mode").forEach(b => b.classList.remove("active"));
+        targetBtn.classList.add("active");
+      }
+
+      // Sliders
+      sliderVolume.addEventListener("input", () => {
+        valVolume.textContent = sliderVolume.value + "%";
+        if (masterGain && !isMuted) {
+          masterGain.gain.value = parseFloat(sliderVolume.value) / 100;
+        }
+      });
+
+      sliderDecay.addEventListener("input", () => {
+        valDecay.textContent = (parseFloat(sliderDecay.value) / 100).toFixed(2);
+        if (analyserNode) {
+          analyserNode.smoothingTimeConstant = parseFloat(sliderDecay.value) / 100;
+        }
+      });
+
+      sliderBloom.addEventListener("input", () => {
+        valBloom.textContent = sliderBloom.value + "%";
+      });
+
+      sliderSpeed.addEventListener("input", () => {
+        valSpeed.textContent = sliderSpeed.value + " Hz";
+        if (isPlaying) {
+          startSynthMode(currentSynthMode);
+        }
+      });
+
+      // Palette Switcher
+      document.querySelectorAll(".color-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+          document.querySelectorAll(".color-pill").forEach(p => p.classList.remove("active"));
+          pill.classList.add("active");
+          currentPalette = pill.dataset.palette;
+        });
+      });
+
+      // Copy CLI Button
+      document.getElementById("btnCopyCli").addEventListener("click", () => {
+        const text = document.getElementById("cliCodeBlock").textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById("btnCopyCli");
+          btn.textContent = "COPIED!";
+          setTimeout(() => btn.textContent = "COPY_CODE", 2000);
+        });
+      });
+
+      // Resize Canvas Handler
+      function resizeCanvas() {
+        const rect = visualizerContainer.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      /**
+       * 60 FPS Render & Telemetry Loop
+       */
+      function render() {
+        requestAnimationFrame(render);
+
+        const w = canvas.width;
+        const h = canvas.height;
+        const pal = PALETTES[currentPalette];
+
+        // Background clear
+        ctx.fillStyle = "#030207";
+        ctx.fillRect(0, 0, w, h);
+
+        const freqData = new Uint8Array(analyserNode ? analyserNode.frequencyBinCount : 64);
+        const timeData = new Uint8Array(analyserNode ? analyserNode.fftSize : 128);
+
+        if (analyserNode && isPlaying) {
+          analyserNode.getByteFrequencyData(freqData);
+          analyserNode.getByteTimeDomainData(timeData);
+        } else {
+          // Subtle idle ambient oscillation
+          const t = performance.now() * 0.002;
+          for (let i = 0; i < 64; i++) {
+            freqData[i] = Math.max(0, Math.floor(18 + 12 * Math.sin(t + i * 0.15)));
+            timeData[i] = 128 + Math.floor(6 * Math.sin(t * 2 + i * 0.2));
+          }
+        }
+
+        // Energy Band Analysis
+        let subSum = 0, bassSum = 0, midSum = 0, presSum = 0, brillSum = 0;
+        let peakVal = 0;
+        let peakIndex = 0;
+        let totalRms = 0;
+
+        for (let i = 0; i < 64; i++) {
+          const v = freqData[i];
+          totalRms += (v / 255) * (v / 255);
+          if (v > peakVal) {
+            peakVal = v;
+            peakIndex = i;
+          }
+
+          if (i <= 2) subSum += v;
+          else if (i <= 7) bassSum += v;
+          else if (i <= 23) midSum += v;
+          else if (i <= 43) presSum += v;
+          else brillSum += v;
+        }
+
+        const subAvg = subSum / (3 * 255);
+        const bassAvg = bassSum / (5 * 255);
+        const midAvg = midSum / (16 * 255);
+        const presAvg = presSum / (20 * 255);
+        const brillAvg = brillSum / (20 * 255);
+        const rms = Math.sqrt(totalRms / 64);
+        const rmsDb = (20 * Math.log10(rms + 0.0001)).toFixed(1);
+
+        // Update Band Meter DOM
+        meterSub.style.width = Math.round(subAvg * 100) + "%";
+        valSub.textContent = Math.round(subAvg * 100) + "%";
+        meterBass.style.width = Math.round(bassAvg * 100) + "%";
+        valBass.textContent = Math.round(bassAvg * 100) + "%";
+        meterMid.style.width = Math.round(midAvg * 100) + "%";
+        valMid.textContent = Math.round(midAvg * 100) + "%";
+        meterPres.style.width = Math.round(presAvg * 100) + "%";
+        valPres.textContent = Math.round(presAvg * 100) + "%";
+        meterBrill.style.width = Math.round(brillAvg * 100) + "%";
+        valBrill.textContent = Math.round(brillAvg * 100) + "%";
+
+        // Update Stats Badges
+        statRms.textContent = `RMS: ${rmsDb} dB`;
+        const nyquist = (audioCtx ? audioCtx.sampleRate : 44100) / 2;
+        const peakFreqHz = Math.round((peakIndex / 64) * nyquist);
+        statPeakHz.textContent = `PEAK: ${peakFreqHz} Hz`;
+
+        let dominantOctave = "SUB";
+        if (peakIndex > 43) dominantOctave = "BRILLIANCE";
+        else if (peakIndex > 23) dominantOctave = "PRESENCE";
+        else if (peakIndex > 7) dominantOctave = "MID";
+        else if (peakIndex > 2) dominantOctave = "BASS";
+        statOctave.textContent = `OCTAVE: ${dominantOctave}`;
+
+        // Dynamic Reactive Ambilight Bloom
+        const bloomMult = parseFloat(sliderBloom.value) / 100;
+        const bassImpact = Math.max(subAvg, bassAvg);
+        const glowPx = Math.round((12 + bassImpact * 45) * bloomMult);
+        const glowAlpha = (0.2 + bassImpact * 0.5) * bloomMult;
+        visualizerContainer.style.boxShadow = `0 0 ${glowPx}px rgba(168, 85, 247, ${glowAlpha}), inset 0 0 ${glowPx / 2}px rgba(6, 182, 212, ${glowAlpha * 0.5})`;
+        visualizerContainer.style.borderColor = bassImpact > 0.4 ? pal.highlight : "rgba(168, 85, 247, 0.4)";
+
+        ambilightBackdrop.style.background = `radial-gradient(circle at 50% 35%, rgba(168, 85, 247, ${0.06 + bassImpact * 0.18 * bloomMult}) 0%, rgba(6, 182, 212, ${0.03 + midAvg * 0.12 * bloomMult}) 50%, transparent 75%)`;
+
+        // Canvas Visualizer Rendering
+        if (visualizerMode === "radial") {
+          // Mode A: Circular Radial Visualizer
+          const cx = w / 2;
+          const cy = h / 2;
+          const minDim = Math.min(w, h);
+          const baseRadius = minDim * 0.22 + bassImpact * (minDim * 0.05);
+
+          rotationAngle += 0.005 + bassImpact * 0.01;
+
+          // Inner pulsing core ring
+          ctx.beginPath();
+          ctx.arc(cx, cy, baseRadius * 0.85, 0, Math.PI * 2);
+          ctx.strokeStyle = pal.primary;
+          ctx.lineWidth = 2;
+          ctx.shadowColor = pal.glow;
+          ctx.shadowBlur = 12;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // Radial Spokes (64 bins)
+          const binCount = 64;
+          for (let i = 0; i < binCount; i++) {
+            const angle = (i / binCount) * (Math.PI * 2) + rotationAngle;
+            const amp = freqData[i] / 255;
+            const barLen = amp * (minDim * 0.24) + 4;
+
+            const x0 = cx + Math.cos(angle) * baseRadius;
+            const y0 = cy + Math.sin(angle) * baseRadius;
+            const x1 = cx + Math.cos(angle) * (baseRadius + barLen);
+            const y1 = cy + Math.sin(angle) * (baseRadius + barLen);
+
+            const grad = ctx.createLinearGradient(x0, y0, x1, y1);
+            grad.addColorStop(0, pal.primary);
+            grad.addColorStop(0.6, pal.secondary);
+            grad.addColorStop(1, pal.highlight);
+
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = Math.max(2, (minDim / binCount) * 0.7);
+            ctx.lineCap = "round";
+            ctx.stroke();
+          }
+
+          // Inner Waveform Core
+          ctx.beginPath();
+          const waveRadius = baseRadius * 0.6;
+          for (let i = 0; i < 64; i++) {
+            const angle = (i / 64) * (Math.PI * 2) - rotationAngle * 2;
+            const offset = ((timeData[i] - 128) / 128) * (waveRadius * 0.4);
+            const r = waveRadius + offset;
+            const wx = cx + Math.cos(angle) * r;
+            const wy = cy + Math.sin(angle) * r;
+            if (i === 0) ctx.moveTo(wx, wy);
+            else ctx.lineTo(wx, wy);
+          }
+          ctx.closePath();
+          ctx.strokeStyle = pal.secondary;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+        } else if (visualizerMode === "bars") {
+          // Mode B: 64-Band Linear Equalizer with Peak Caps
+          const barWidth = (w / 64) - 2;
+          for (let i = 0; i < 64; i++) {
+            const x = i * (w / 64) + 1;
+            const amp = freqData[i] / 255;
+            const barHeight = amp * (h * 0.85);
+            const y = h - barHeight;
+
+            // Gravity Peak Cap
+            if (barHeight > peakCaps[i]) {
+              peakCaps[i] = barHeight;
+            } else {
+              peakCaps[i] = Math.max(0, peakCaps[i] - 1.2);
+            }
+            const peakY = h - peakCaps[i];
+
+            const barGrad = ctx.createLinearGradient(x, h, x, y);
+            barGrad.addColorStop(0, pal.primary);
+            barGrad.addColorStop(0.7, pal.secondary);
+            barGrad.addColorStop(1, pal.highlight);
+
+            ctx.fillStyle = barGrad;
+            ctx.fillRect(x, y, barWidth, barHeight);
+
+            // Peak Cap Line
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(x, peakY - 3, barWidth, 2);
+          }
+        } else if (visualizerMode === "wave") {
+          // Mode C: Oscilloscope Time-Domain Waveform
+          ctx.beginPath();
+          const sliceW = w / 128;
+          let x = 0;
+          for (let i = 0; i < 128; i++) {
+            const v = timeData[i] / 128.0;
+            const y = (v * h) / 2;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+            x += sliceW;
+          }
+          ctx.strokeStyle = pal.secondary;
+          ctx.lineWidth = 2.5;
+          ctx.shadowColor = pal.secondary;
+          ctx.shadowBlur = 10;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+      }
+
+      // Start render loop
+      render();
+    })();
+  </script>
 </body>
 </html>
