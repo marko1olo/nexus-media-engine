@@ -921,7 +921,91 @@ if ('serviceWorker' in navigator) {
           <button class="color-pill" data-palette="matrix-green">MATRIX-GREEN</button>
         </div>
       </section>
-    </main>
+    
+    <!-- BIQUAD FILTER EFFECTS RACK & ADSR ENVELOPE SUITE -->
+    <section class="nexus-dsp-rack" style="margin: 2rem 0; background: #0e0918; border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.6); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 1rem; margin-bottom: 1.25rem;">
+        <div>
+          <span style="background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #c084fc; font-size: 0.75rem; font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 999px; font-family: monospace;">DSP RACK 3.0</span>
+          <h3 style="font-size: 1.25rem; color: #fff; margin-top: 0.4rem;">BiquadFilterNode Effects Rack & ADSR Envelope Shaper</h3>
+        </div>
+        <span style="font-family: monospace; font-size: 0.8rem; color: #a855f7;">48.0 kHz 32-bit Float</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <!-- Filter Controls -->
+        <div style="background: #181024; border: 1px solid #2d1b46; border-radius: 8px; padding: 1.25rem;">
+          <h4 style="font-size: 0.95rem; color: #c084fc; font-family: monospace; margin-bottom: 1rem;">🎛️ BIQUAD FILTER PARAMETERS</h4>
+          <div style="margin-bottom: 0.75rem;">
+            <label style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #cbd5e1; font-family: monospace;">
+              <span>Filter Type:</span>
+              <strong style="color: #a855f7;">Lowpass (12dB/oct)</strong>
+            </label>
+            <select style="width: 100%; background: #0e0918; border: 1px solid #3b225c; color: #f1f5f9; padding: 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.8rem; margin-top: 0.3rem;">
+              <option>Lowpass</option>
+              <option>Highpass</option>
+              <option>Bandpass</option>
+              <option>Notch</option>
+              <option>Peaking EQ</option>
+            </select>
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <label style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #cbd5e1; font-family: monospace;">
+              <span>Cutoff Frequency:</span>
+              <strong id="cutoff-val" style="color: #c084fc;">1,200 Hz</strong>
+            </label>
+            <input type="range" id="cutoff-slider" min="100" max="8000" value="1200" style="width: 100%; accent-color: #a855f7;">
+          </div>
+        </div>
+
+        <!-- ADSR Visualizer -->
+        <div style="background: #181024; border: 1px solid #2d1b46; border-radius: 8px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-family: monospace; color: #c084fc; margin-bottom: 0.5rem;">
+            <span>ADSR ENVELOPE STAGES</span>
+            <span>A: 20ms | D: 80ms | S: 70% | R: 150ms</span>
+          </div>
+          <canvas id="adsr-canvas" width="300" height="80" style="background:#0e0918; border-radius:4px; width:100%;"></canvas>
+          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; font-family: monospace; margin-top: 0.4rem;">
+            <span>Attack</span><span>Decay</span><span>Sustain</span><span>Release</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+    (function() {
+      const cvs = document.getElementById('adsr-canvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      ctx.fillStyle = '#0e0918';
+      ctx.fillRect(0, 0, cvs.width, cvs.height);
+      ctx.strokeStyle = '#a855f7';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(10, 70);
+      ctx.lineTo(60, 15);  // Attack
+      ctx.lineTo(130, 35); // Decay
+      ctx.lineTo(220, 35); // Sustain
+      ctx.lineTo(290, 70); // Release
+      ctx.stroke();
+
+      // Points
+      ctx.fillStyle = '#f1f5f9';
+      [ [10,70], [60,15], [130,35], [220,35], [290,70] ].forEach(([x,y]) => {
+        ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill();
+      });
+
+      const cs = document.getElementById('cutoff-slider');
+      const cv = document.getElementById('cutoff-val');
+      if (cs && cv) {
+        cs.addEventListener('input', () => {
+          cv.textContent = parseInt(cs.value).toLocaleString() + ' Hz';
+        });
+      }
+    })();
+    </script>
+
+</main>
 
     <!-- Technical Specs Row -->
     <section class="nexus-specs-grid">
