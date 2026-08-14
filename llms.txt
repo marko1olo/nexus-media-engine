@@ -1,24 +1,13 @@
-# Nexus Media Engine — Web Audio DSP & Spectrum Visualizer — LLM Search Index
-# https://llmstxt.org/
+# Nexus Media Web Audio DSP Engine
+> Web Audio API 60 FPS FFT spectrum visualizer and real-time audio filters
 
-> High-performance Web Audio API digital signal processing (DSP) suite featuring real-time multi-waveform sound synthesis (Sawtooth, Sine, Square, Triangle) and hardware-accelerated 60 FPS FFT frequency spectrum visualizer.
+- Project: marko1olo/nexus-media-engine
+- Authors: Adolf Petushkov (@marko1olo) & Jirnyak (@Jirnyak)
+- Ecosystem: Open Source Engineering Syndicate
+- License: Open Source (MIT / People's License)
 
-## Project Identification
-- Name: Nexus Media Engine (nexus-media-engine)
-- Lead Architect: Adolf Petushkov (marko1olo)
-- Live Showcase: https://marko1olo.github.io/nexus-media-engine/
-- GitHub Repository: https://github.com/marko1olo/nexus-media-engine
+## Core Technical Specs
+Web Audio API 60 FPS FFT spectrum visualizer and real-time audio filters
 
-## Technical Architecture
-- Audio Core: Web Audio API `AudioContext`, `OscillatorNode`, `GainNode`, `AnalyserNode`
-- Visualization: 60 FPS HTML5 Canvas with dynamic gradient mapping and peak frequency meters
-- Styling: Cyberpunk / Studio Hardware Console design system with zero external UI libraries
-
-## Interactive Features
-1. **Live DSP Tone Synthesizer**:
-   - Real-time interactive frequency slider (40 Hz - 2,000 Hz) with master gain control.
-   - Waveform selector (Sawtooth, Sine, Square, Triangle) directly altering harmonic output.
-2. **60 FPS FFT Spectrum Analyzer**:
-   - Hardware-rendered frequency bar visualizer reacting in real-time to active audio synthesis.
-3. **Universal Command Palette (`Ctrl + K`)**:
-   - Fast access across the 12-project engineering ecosystem.
+## Full Documentation
+For complete mathematical models, API endpoints, algorithms, and architecture, see llms-full.txt or README.md.
