@@ -1,59 +1,93 @@
 # 🔒 Security Policy — marko1olo/nexus-media-engine
 
-> **Vulnerability Reporting, Threat Model & Responsible Disclosure**  
-> Maintained by the **Жирняк & Адольф Петушков** Engineering Syndicate
+> **Vulnerability Disclosure, Threat Modeling & Defensive Architecture**  
+> Maintained by the **Жирняк & Адольф Петушков** Engineering Syndicate  
+> Project Scope: `Nexus Media Engine Web Audio API DSP & 60 FPS Oscilloscope`
 
 ---
 
-## 🛡️ 1. Supported Versions
-
-We actively maintain and provide security patches for the following versions of **marko1olo/nexus-media-engine**:
-
-| Version | Supported | Status |
-| :--- | :--- | :--- |
-| `main` branch | ✅ Yes | Actively patched |
-| Latest Release tag | ✅ Yes | Critical vulnerability fixes |
-| Historical branches | ❌ No | Please upgrade to `main` |
-
----
-
-## 🎯 2. Domain Threat Model
-
-Security audits for **marko1olo/nexus-media-engine** focus on the following attack surfaces and failure modes:
-
-1. **Audio Kernel Deadlocks**:  Infinite loops inside custom AudioWorklet processors crashing the browser audio daemon.
-2. **Microphone Permission Abuse**:  Audio input streams captured without explicit visual user consent indicators.
-3. **Memory Leaks in Buffer Chains**:  Unreleased AudioBufferSourceNodes causing tab memory crashes.
+## 📑 Table of Contents
+1. [🛡️ Supported Versions & Patch Lifecycle](#️-1-supported-versions--patch-lifecycle)
+2. [🎯 Domain Threat Model & Attack Surfaces](#-2-domain-threat-model--attack-surfaces)
+3. [🚨 Vulnerability Reporting & Disclosure Protocol](#-3-vulnerability-reporting--disclosure-protocol)
+4. [⏱️ Response SLAs & Remediation Timelines](#️-4-response-slas--remediation-timelines)
+5. [💎 Defensive Engineering Architecture](#-5-defensive-engineering-architecture)
+6. [🔍 Dependency Auditing & Supply Chain Safety](#-6-dependency-auditing--supply-chain-safety)
+7. [👥 Syndicate Security Contacts](#-7-syndicate-security-contacts)
 
 ---
 
-## 🚨 3. Reporting a Vulnerability
+## 🛡️ 1. Supported Versions & Patch Lifecycle
 
-If you discover a security vulnerability or exploit in **marko1olo/nexus-media-engine**, please report it responsibly:
+We actively maintain and provide critical security updates for the following release lines of **marko1olo/nexus-media-engine**:
 
-### 3.1 Submission Procedure
-1. **Do NOT open a public GitHub issue** with exploitable proofs-of-concept.
-2. Open a **Private Security Advisory** on GitHub:  
-   Navigate to `Security` -> `Advisories` -> `Report a vulnerability`.
-3. Alternatively, contact the maintainers directly through authenticated syndicate communication channels.
-
-### 3.2 Report Details
-To help us investigate and patch the vulnerability quickly, please include:
-* **Vulnerability Description**: Detailed explanation of the flaw and affected subsystem.
-* **Proof-of-Concept (PoC)**: Minimal, reproducible steps or scripts demonstrating the vulnerability.
-* **Impact Assessment**: Potential consequences (e.g. arbitrary code execution, denial of service, data exfiltration).
-* **Proposed Mitigation**: If you have an architectural patch or suggested fix, please share it.
+| Branch / Release | Supported | Patch Cadence | Notes |
+| :--- | :--- | :--- | :--- |
+| `main` (Head) | ✅ Yes | Immediate Hotfix | Primary development target; fully patched. |
+| Latest Tagged Release | ✅ Yes | Within 48 Hours | Critical vulnerabilities backported. |
+| Historical / Deprecated | ❌ No | None | Please rebase or upgrade to current branch. |
 
 ---
 
-## ⏱️ 4. Response & Disclosure Timeline
+## 🎯 2. Domain Threat Model & Attack Surfaces
 
-1. **Acknowledgment**: We acknowledge receipt of your vulnerability report within **48 hours**.
-2. **Triage & Reproduction**: We evaluate the severity and reproduce the issue within **5 business days**.
-3. **Patch & Verification**: A secure patch is developed, tested against the test suite, and committed to a private branch.
-4. **Coordinated Disclosure**: Once the fix is published and verified on `main`, a CVE / advisory will be published crediting the researcher.
+Security engineering in marko1olo/nexus-media-engine is guided by the following domain-specific threat vector analyses:
+
+### 1. Audio Kernel Deadlocks
+* **Description**: Infinite loops inside custom AudioWorklet processors crashing the browser audio daemon.
+* **Impact Rating**: HIGH / CRITICAL
+* **Mitigation Strategy**: Strict schema validation, boundary fuzz testing, and automated static security analysis.
+### 2. Microphone Permission Abuse
+* **Description**: Audio input streams captured without explicit visual user consent indicators.
+* **Impact Rating**: HIGH / CRITICAL
+* **Mitigation Strategy**: Strict schema validation, boundary fuzz testing, and automated static security analysis.
+### 3. Buffer Memory Leaks
+* **Description**: Unreleased AudioBufferSourceNodes causing browser tab memory crashes.
+* **Impact Rating**: HIGH / CRITICAL
+* **Mitigation Strategy**: Strict schema validation, boundary fuzz testing, and automated static security analysis.
 
 ---
 
-### 👥 Engineering Syndicate
-Maintained by **Жирняк** & **Адольф Петушков**.
+## 🚨 3. Vulnerability Reporting & Disclosure Protocol
+
+If you discover a security flaw or exploit vector in **marko1olo/nexus-media-engine**, do **NOT** post it publicly in open issues or discussions.
+
+### 3.1 Submission Workflow
+1. Navigate to the **Security** tab on GitHub -> **Advisories** -> **Report a vulnerability**.
+2. Alternatively, open a cryptographically signed advisory to the syndicate maintainers.
+3. Provide the following details:
+   * Subsystem and affected source files / line numbers.
+   * Step-by-step minimal reproduction script or payload.
+   * Assessment of potential exploit impact (memory corruption, data exfiltration, DoS).
+
+---
+
+## ⏱️ 4. Response SLAs & Remediation Timelines
+
+* **Initial Triage & Acknowledgment**: Within **24–48 hours**.
+* **Vulnerability Verification & Reproducer**: Within **3 business days**.
+* **Remediation Patch Development**: Within **7 business days**.
+* **Public Coordinated Disclosure**: Published simultaneously with the verified patch release.
+
+---
+
+## 💎 5. Defensive Engineering Architecture
+
+All code running in this repository must adhere to defensive coding invariants:
+* **Memory Bounds Checking**: All slice offsets, vector indices, and WebAssembly linear memory allocations are strictly bounded.
+* **Input Sanitization**: External network payloads, uploaded files, and deserialized states must be validated before ingestion.
+* **Cryptographic Rigor**: Sensitive tokens, cryptographic keys, and hashes must use standard constant-time comparison algorithms to eliminate timing side-channels.
+
+---
+
+## 🔍 6. Dependency Auditing & Supply Chain Safety
+
+1. Automated daily vulnerability scans on all dependencies via `npm audit` / `cargo audit` / `pip-audit`.
+2. All lockfiles are committed and pinned to immutable cryptographic hashes.
+3. Third-party vendor updates require manual review of code diffs to prevent supply chain poisoning.
+
+---
+
+## 👥 7. Syndicate Security Contacts
+
+Developed, audited, and maintained under the security direction of **Жирняк** & **Адольф Петушков**.
