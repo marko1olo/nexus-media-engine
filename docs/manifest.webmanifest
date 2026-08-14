@@ -1,0 +1,17 @@
+{
+  "name": "Nexus Media Engine",
+  "short_name": "NexusMedia",
+  "description": "Web Audio API DSP Synthesizer & 60 FPS FFT Spectrum Visualizer",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0e0918",
+  "theme_color": "#a855f7",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
