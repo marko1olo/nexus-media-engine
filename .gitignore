@@ -29,6 +29,14 @@ take_screenshot.py
 test_app.py
 capture_gallery.py
 
+# Databases, Logs & ML Models
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+models/
+*.log
+
 # Ignore images in the root directory just in case
 *.jpg
 *.jpeg
